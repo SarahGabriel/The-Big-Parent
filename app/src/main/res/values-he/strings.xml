@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="map">מפה</string>
+    <string name="action_settings">הגדרות</string>
+    <string name="hello_world">שלום עולם</string>
+    <string name="title_activity_maps">מפה</string>
+    <string name="add_location">הוסף מיקום</string>
+    <string name="add_location_name">שם המיקום:</string>
+    <string name="add_location_name_hint">הוסף שם...</string>
+    <string name="add_location_radius">רדיוס:</string>
+    <string name="add_location_radius_hint">הוסף רדיוס...</string>
+    <string name="add_location_contact">איש קשר:</string>
+    <string name="add_contact_button">הוסף איש קשר</string>
+    <string name="title_activity_add_location">הוסף מיקום</string>
+    <string name="title_activity_map_overlay">מפה</string>
+</resources>
