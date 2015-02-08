@@ -2,34 +2,36 @@ package com.thebigparent.sg.thebigparent.Activities;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Point;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.thebigparent.sg.thebigparent.Classes.MapLocation;
+import com.thebigparent.sg.thebigparent.Dal.Dal_location;
 import com.thebigparent.sg.thebigparent.R;
 
+import java.util.List;
 
-public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLongClickListener, GoogleMap.OnMarkerClickListener
+
+public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLongClickListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener
 {
 
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private Marker myMarker;
+    private Dal_location dal_location;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,16 +39,22 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLon
         setContentView(R.layout.activity_maps);
         setUpMapIfNeeded();
 
+        dal_location = new Dal_location();
         mMap.setOnMapLongClickListener(this);
-
+        mMap.setOnInfoWindowClickListener(this);
 
     }
 
     @Override
-    protected void onResume() {
+    protected void onResume()
+    {
         super.onResume();
         setUpMapIfNeeded();
+
+        //List<LatLng> latLngs = dal_location.getAllLocationsMarker(this);
+        addMarkersOnMap();
     }
+
 
     /**
      * Sets up the map if it is possible to do so (i.e., the Google Play services APK is correctly
@@ -63,7 +71,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLon
      * stopped or paused), {@link #onCreate(Bundle)} may not be called again so we should call this
      * method in {@link #onResume()} to guarantee that it will be called.
      */
-    private void setUpMapIfNeeded() {
+    private void setUpMapIfNeeded()
+    {
         // Do a null check to confirm that we have not already instantiated the map.
         if (mMap == null) {
             // Try to obtain the map from the SupportMapFragment.
@@ -76,12 +85,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLon
         }
     }
 
-    /**
-     * This is where we can add markers or lines, add listeners or move the camera. In this case, we
-     * just add a marker near Africa.
-     * <p/>
-     * This should only be called once and when we are sure that {@link #mMap} is not null.
-     */
+
     private void setUpMap() {
         //mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
 
@@ -118,8 +122,22 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLon
         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(latLng, 14)));
 
         //mMap.addCircle(new CircleOptions().center(latLng).radius(100));
+        mMap.addMarker(new MarkerOptions().position(latLng).title("You are here!").snippet("Consider yourself located").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+    }
 
-        mMap.addMarker(new MarkerOptions().position(latLng).title("You are here!").snippet("Consider yourself located"));
+    private void addMarkersOnMap()
+    {
+       List<LatLng> latLngList = dal_location.getAllLocationsMarker(getApplicationContext());
+       List<MapLocation> locationList = dal_location.getAllLocations(getApplicationContext());
+       for(int i = 0; i<latLngList.size(); i++)
+       {
+           MapLocation location = locationList.get(i);
+           double longitude = Double.parseDouble(location.getLongitude());
+           double latitude = Double.parseDouble(location.getLatitude());
+           LatLng latLng = new LatLng(latitude, longitude);
+           mMap.addMarker(new MarkerOptions().position(latLng).title(location.getContact().toString()).snippet(location.getLocationName()));
+           mMap.addCircle(new CircleOptions().center(latLng).radius(Integer.parseInt(location.getRadius().toString())));
+       }
     }
 
 
@@ -127,23 +145,61 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLon
     public void onMapLongClick(LatLng latLng)
     {
         mMap.setOnMarkerClickListener(this);
+
+//        // List of all the markers
+//        List<LatLng> latLngList = dal_location.getAllLocationsMarker(getApplicationContext());
+//        for(LatLng latLng1 : latLngList)
+//        {
+//            // Check if the long click is near to one of the markers we've added
+//            if(Math.abs(latLng1.latitude - latLng.latitude) < 0.00005 && Math.abs(latLng1.longitude - latLng.longitude) < 0.00005)
+//            {
+//                onMarkerLongClick(latLng1);
+//                return;
+//            }
+//        }
+
+        // adding marker after long click pressed
         myMarker = mMap.addMarker(new MarkerOptions()
-        .position(latLng)
-        .title("Your point"));
+        .position(latLng));
+
+        // Go to activity - adding marker settings
+        Intent i = new Intent(this, AddLocationActivity.class);
+        i.putExtra("latitude", Double.toString(myMarker.getPosition().latitude));
+        i.putExtra("longitude", Double.toString(myMarker.getPosition().longitude));
+        startActivity(i);
+
 
 
     }
 
+    private void onMarkerLongClick(LatLng latLng)
+    {
+        Toast.makeText(MapsActivity.this, "got clicked", Toast.LENGTH_SHORT).show(); //do some stuff
+
+    }
+
+
     @Override
     public boolean onMarkerClick(Marker marker)
     {
-        if (marker.equals(myMarker))
-        {
-            //handle click here
-            Intent i = new Intent(this, AddLocationActivity.class);
-            startActivity(i);
-        }
+//        if (marker.equals(myMarker))
+//        {
+//            //handle click here
+//            Intent i = new Intent(this, AddLocationActivity.class);
+//            i.putExtra("latitude", Double.toString(myMarker.getPosition().latitude));
+//            i.putExtra("longitude", Double.toString(myMarker.getPosition().longitude));
+//            startActivity(i);
+//        }
         return false;
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker)
+    {
+        Intent i = new Intent(this, MarkerOptionsActivity.class);
+        i.putExtra("latitude", Double.toString(marker.getPosition().latitude));
+        i.putExtra("longitude", Double.toString(marker.getPosition().longitude));
+        startActivity(i);
     }
 
 //    @Override

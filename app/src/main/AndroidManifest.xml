@@ -63,6 +63,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.thebigparent.sg.thebigparent.Activities.AddLocationActivity" />
         </activity>
+        <activity
+            android:name=".Activities.MarkerOptionsActivity"
+            android:label="@string/title_activity_marker_options"
+            android:parentActivityName=".Activities.MapsActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.thebigparent.sg.thebigparent.Activities.MapsActivity" />
+        </activity>
     </application>
 
 </manifest>

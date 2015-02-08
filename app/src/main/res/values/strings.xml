@@ -16,5 +16,21 @@
     <string name="add_location_contact">Contact:</string>
     <string name="add_contact_button">Add Contact</string>
     <string name="title_activity_contact_list">ContactListActivity</string>
+    <string name="title_activity_marker_options">MarkerOptionsActivity</string>
+    <string name="address">Address</string>
+    <string name="locationName">Location Name:</string>
+    <string name="radius">Radius:</string>
+    <string name="meters">meters</string>
+    <string name="days">Days:</string>
+    <string name="sunday">sun</string>
+    <string name="monday">mon</string>
+    <string name="tuesday">tue</string>
+    <string name="wednesday">wed</string>
+    <string name="thursday">thu</string>
+    <string name="friday">fri</string>
+    <string name="saturday">sat</string>
+    <string name="hour_start">Hours start:</string>
+    <string name="delete_location">Delete Location</string>
+    <string name="hour_end">Hours End:</string>
 
 </resources>

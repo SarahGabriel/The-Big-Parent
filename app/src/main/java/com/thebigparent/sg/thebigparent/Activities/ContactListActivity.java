@@ -1,10 +1,12 @@
 package com.thebigparent.sg.thebigparent.Activities;
 
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.database.Cursor;
+import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.thebigparent.sg.thebigparent.R;
@@ -38,6 +41,7 @@ public class ContactListActivity extends ActionBarActivity implements AdapterVie
         listView.setAdapter(listAdapter);
         listView.setOnItemClickListener(this);
 
+
     }
 
     private List<String> contactList()
@@ -63,13 +67,14 @@ public class ContactListActivity extends ActionBarActivity implements AdapterVie
                     {
                         contacts.add(name);
                         String phoneNo = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                        //String mail = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Email));
                         Toast.makeText(ContactListActivity.this, "Name: " + name + ", Phone No: " + phoneNo, Toast.LENGTH_SHORT).show();
                     }
                     pCur.close();
                 }
             }
         }
-
+        Log.w("contact list", contacts.toString());
         return contacts;
     }
 
@@ -97,7 +102,19 @@ public class ContactListActivity extends ActionBarActivity implements AdapterVie
     }
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+    {
+        setContentView(R.layout.activity_contact_list);
+        Intent i = getIntent();
+        //String contactName = i.getStringExtra("keyValue", 0);
+        String item = ((TextView)view).getText().toString();
+        Log.w("name contact", item);
 
+        i.putExtra("name", item);
+        setResult(RESULT_OK, i);
+       // finishActivity(AddLocationActivity.REQUEST_CODE);
+        this.finish();
     }
+
+
 }

@@ -1,22 +1,32 @@
 package com.thebigparent.sg.thebigparent.Activities;
+
 import android.content.Intent;
-import android.provider.ContactsContract;
-
-
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 
+import com.thebigparent.sg.thebigparent.Classes.MapLocation;
+import com.thebigparent.sg.thebigparent.Dal.Dal_location;
 import com.thebigparent.sg.thebigparent.R;
 
 import java.util.Locale;
 
 public class AddLocationActivity extends ActionBarActivity
 {
-    LinearLayout mainLinearLayout;
+    final static public int REQUEST_CODE = 109;
+    private LinearLayout mainLinearLayout;
+    private EditText locationName_editText, radius_editText;
+
+    private String contactName;
+    private Dal_location dal_location;
+    private String latitude, longitude;
+
+    private boolean backFromActivity = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -24,8 +34,17 @@ public class AddLocationActivity extends ActionBarActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_location);
 
+        Intent i = getIntent();
+        latitude = i.getStringExtra("latitude");
+        longitude = i.getStringExtra("longitude");
+
+        dal_location = new Dal_location();
+
         mainLinearLayout = (LinearLayout)findViewById(R.id.main_layout_add_location);
+        locationName_editText = (EditText)findViewById(R.id.add_location_edit_text_name);
+        radius_editText = (EditText)findViewById(R.id.add_location_edit_text_radius);
         setDirectionLayout();
+
     }
 
     private void setDirectionLayout()
@@ -60,6 +79,38 @@ public class AddLocationActivity extends ActionBarActivity
     public void onClick_add_contact_button(View view)
     {
         Intent i = new Intent(this, ContactListActivity.class);
-        startActivity(i);
+        startActivityForResult(i, REQUEST_CODE);
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {     // Called when Setting activity returns
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE)
+        {
+            if (resultCode == RESULT_OK)
+            {
+                contactName = data.getStringExtra("name");
+                Log.w("onResult", contactName);
+                Log.w("onResultLongitude", longitude);
+                Log.w("onResultLatitude", latitude);
+
+                backFromActivity = true;            // Flag returned from Settings activity
+            }
+        }
+    }
+
+    public void onCLick_add_location_button(View view)
+    {
+        MapLocation location;
+
+
+        if(backFromActivity)
+        {
+            location = new MapLocation(locationName_editText.getText().toString(), longitude, latitude, radius_editText.getText().toString(), contactName);
+            Log.w("Location",location.toString());
+            dal_location.addNewLocation(location, this);
+            this.finish();
+        }
     }
 }
