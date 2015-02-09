@@ -140,4 +140,14 @@ public class Dal_location
 
         return location;
     }
+
+    public void deleteLocation(String latitude, String longitude, Context context)
+    {
+        MyDbHelper dbHelper = new MyDbHelper(context);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        db.delete(Constants_location.TABLE_NAME, Constants_location.COLUMN_NAME_LATITUDE + " = ? AND " + Constants_location.COLUMN_NAME_LONGITUDE + " = ?",
+                new String[] { latitude, longitude});
+        db.close();
+    }
 }

@@ -71,6 +71,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.thebigparent.sg.thebigparent.Activities.MapsActivity" />
         </activity>
+
+        <service
+            android:name=".Services.GpsService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
     </application>
 
 </manifest>

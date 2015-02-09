@@ -1,8 +1,11 @@
 package com.thebigparent.sg.thebigparent.Activities;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.telephony.SmsManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -48,6 +51,19 @@ public class MarkerOptionsActivity extends ActionBarActivity
         np_hour_end = (NumberPicker)findViewById(R.id.number_picker_hour_end);
         np_min_end = (NumberPicker)findViewById(R.id.number_picker_min_end);
 
+        setNumberPickers();
+
+
+        mainLayout.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
+
+        contactName.setText(location.getContact().toString());
+        address.setText("Latitude: "+location.getLatitude()+" Longitude: "+location.getLongitude());
+        locationName.setText(location.getLocationName().toString());
+        radius.setText(location.getRadius().toString());
+    }
+
+    private void setNumberPickers()
+    {
         np_hour_start.setMinValue(00);
         np_hour_start.setMaxValue(23);
 
@@ -60,12 +76,44 @@ public class MarkerOptionsActivity extends ActionBarActivity
         np_min_end.setMinValue(00);
         np_min_end.setMaxValue(59);
 
-        mainLayout.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
+        np_hour_start.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
+        np_min_start.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
 
-        contactName.setText(location.getContact().toString());
-        address.setText("Latitude: "+location.getLatitude()+" Longitude: "+location.getLongitude());
-        locationName.setText(location.getLocationName().toString());
-        radius.setText(location.getRadius().toString());
+        np_hour_end.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
+        np_min_end.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
+
+        np_hour_start.setFormatter(new NumberPicker.Formatter()
+        {
+            @Override
+            public String format(int value)
+            {
+                return String.format("%02d", value);
+            }
+        });
+        np_hour_end.setFormatter(new NumberPicker.Formatter()
+        {
+            @Override
+            public String format(int value)
+            {
+                return String.format("%02d", value);
+            }
+        });
+        np_min_start.setFormatter(new NumberPicker.Formatter()
+        {
+            @Override
+            public String format(int value)
+            {
+                return String.format("%02d", value);
+            }
+        });
+        np_min_end.setFormatter(new NumberPicker.Formatter()
+        {
+            @Override
+            public String format(int value)
+            {
+                return String.format("%02d", value);
+            }
+        });
     }
 
 
@@ -92,6 +140,41 @@ public class MarkerOptionsActivity extends ActionBarActivity
         return super.onOptionsItemSelected(item);
     }
 
-    public void onClick_delete_location(View view) {
+    public void onClick_delete_location(View view)
+    {
+        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+
+        // Setting Dialog Title
+        alertDialog.setTitle("Delete Location");
+
+        // Setting Dialog Message
+        alertDialog.setMessage("Are you sure you want to delete this location?");
+        //alertDialog.setIcon(R.drawable.ic_error);
+        // Setting OK Button
+        alertDialog.setButton(alertDialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialog, int which)
+            {
+                deleteLocationAndReturn();
+
+            }
+        });
+
+        // Showing Alert Message
+        alertDialog.show();
+
+    }
+
+    public void  deleteLocationAndReturn()
+    {
+        dal_location.deleteLocation(latitude, longitude, this);
+        this.finish();
+
+    }
+
+    private void sendSMS(String phoneNumber, String message)
+    {
+        SmsManager sms = SmsManager.getDefault();
+        sms.sendTextMessage(phoneNumber, null, message, null, null);
     }
 }

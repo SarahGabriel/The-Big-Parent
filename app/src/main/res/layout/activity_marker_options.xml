@@ -197,7 +197,8 @@
                         style="@style/Base.TextAppearance.AppCompat.Small"
                         android:id="@+id/number_picker_hour_start"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        >
                     </NumberPicker>
 
                     <NumberPicker

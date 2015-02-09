@@ -7,6 +7,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -25,7 +26,7 @@ import com.thebigparent.sg.thebigparent.R;
 import java.util.List;
 
 
-public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLongClickListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener
+public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLongClickListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener, GoogleMap.InfoWindowAdapter
 {
 
 
@@ -49,9 +50,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLon
     protected void onResume()
     {
         super.onResume();
+        mMap.clear();
         setUpMapIfNeeded();
-
-        //List<LatLng> latLngs = dal_location.getAllLocationsMarker(this);
         addMarkersOnMap();
     }
 
@@ -135,7 +135,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLon
            double longitude = Double.parseDouble(location.getLongitude());
            double latitude = Double.parseDouble(location.getLatitude());
            LatLng latLng = new LatLng(latitude, longitude);
-           mMap.addMarker(new MarkerOptions().position(latLng).title(location.getContact().toString()).snippet(location.getLocationName()));
+//           "\u200e" -- in order to support hebrew language in the marker
+           mMap.addMarker(new MarkerOptions().position(latLng).title("\u200e"+location.getLocationName()).snippet("\u200e"+location.getContact().toString()));
            mMap.addCircle(new CircleOptions().center(latLng).radius(Integer.parseInt(location.getRadius().toString())));
        }
     }
@@ -200,6 +201,16 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLon
         i.putExtra("latitude", Double.toString(marker.getPosition().latitude));
         i.putExtra("longitude", Double.toString(marker.getPosition().longitude));
         startActivity(i);
+    }
+
+    @Override
+    public View getInfoWindow(Marker marker) {
+        return null;
+    }
+
+    @Override
+    public View getInfoContents(Marker marker) {
+        return null;
     }
 
 //    @Override

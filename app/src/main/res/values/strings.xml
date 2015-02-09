@@ -32,5 +32,6 @@
     <string name="hour_start">Hours start:</string>
     <string name="delete_location">Delete Location</string>
     <string name="hour_end">Hours End:</string>
+    <string name="action_locations">Locations list</string>
 
 </resources>
