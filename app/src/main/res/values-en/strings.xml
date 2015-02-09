@@ -16,4 +16,6 @@
     <string name="delete_location">Delete Location</string>
     <string name="hour_end">Hours End:</string>
     <string name="action_locations">Locations list</string>
+    <string name="tracking_time">All my Tracking Time</string>
+    <string name="add_tracking_time">Add Tracking Time</string>
 </resources>

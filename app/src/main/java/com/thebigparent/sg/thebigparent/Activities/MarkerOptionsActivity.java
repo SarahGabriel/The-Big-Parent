@@ -177,4 +177,17 @@ public class MarkerOptionsActivity extends ActionBarActivity
         SmsManager sms = SmsManager.getDefault();
         sms.sendTextMessage(phoneNumber, null, message, null, null);
     }
+
+    public void onClick_add_tracking_time(View view)
+    {
+        Intent i = new Intent(this, AddTimeActivity.class);
+        startActivity(i);
+
+    }
+
+    public void onClick_tracking_time(View view)
+    {
+        Intent i = new Intent(this, TimeActivity.class);
+        startActivity(i);
+    }
 }

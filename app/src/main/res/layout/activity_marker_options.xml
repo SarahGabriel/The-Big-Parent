@@ -258,8 +258,35 @@
             android:layout_height="wrap_content"
 
             android:layout_marginTop="20dp"
-            android:text="Play with the Switch" />
+            android:text="Play with the Switch"
+            android:layout_marginBottom="@dimen/abc_action_bar_default_height_material"
+            android:layout_gravity="center"/>
 
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="@dimen/abc_action_bar_default_height_material">
+
+            <!--Tracking Time -->
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tracking_time"
+                android:onClick="onClick_tracking_time"
+                android:layout_marginRight="@dimen/abc_action_button_min_width_material"
+                android:background="@color/material_deep_teal_200"/>
+
+            <!-- Add Tracking Time -->
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/add_tracking_time"
+                android:onClick="onClick_add_tracking_time"
+                android:background="@color/wallet_holo_blue_light"/>
+
+        </LinearLayout>
+        <!--Delete Location-->
         <Button
             android:id="@+id/delete_location_button"
             android:layout_width="fill_parent"

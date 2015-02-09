@@ -77,6 +77,19 @@
             android:enabled="true"
             android:exported="true" >
         </service>
+
+        <activity
+            android:name=".Activities.TimeActivity"
+            android:label="@string/title_activity_time"
+            android:parentActivityName=".Activities.MarkerOptionsActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.thebigparent.sg.thebigparent.Activities.MarkerOptionsActivity" />
+        </activity>
+        <activity
+            android:name=".Activities.AddTimeActivity"
+            android:label="@string/title_activity_add_time" >
+        </activity>
     </application>
 
 </manifest>
