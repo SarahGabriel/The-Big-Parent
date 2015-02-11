@@ -200,6 +200,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLon
         Intent i = new Intent(this, MarkerOptionsActivity.class);
         i.putExtra("latitude", Double.toString(marker.getPosition().latitude));
         i.putExtra("longitude", Double.toString(marker.getPosition().longitude));
+        i.putExtra("caller", getIntent().getComponent().getClassName());
         startActivity(i);
     }
 

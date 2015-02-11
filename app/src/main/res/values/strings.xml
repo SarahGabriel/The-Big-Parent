@@ -37,5 +37,9 @@
     <string name="title_activity_add_time">AddTimeActivity</string>
     <string name="tracking_time">All my Tracking Time</string>
     <string name="add_tracking_time">Add Tracking Time</string>
+    <string name="action_add_time">Add Time</string>
+    <string name="pick_hours">1. Choose Hours of your tracking</string>
+    <string name="pick_days">2. Choose Days of your tracking</string>
+    <string name="no_repeat">No Repeat</string>
 
 </resources>

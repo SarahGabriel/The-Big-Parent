@@ -168,80 +168,6 @@
                     android:text="@string/saturday"/>
             </LinearLayout>
         </LinearLayout>
-
-        <!-- Hours -->
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="center">
-
-            <!-- Hours Start -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    style="@style/Base.TextAppearance.AppCompat.Title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/hour_start"/>
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="@dimen/activity_horizontal_margin"
-                    android:orientation="horizontal">
-
-                    <NumberPicker
-                        style="@style/Base.TextAppearance.AppCompat.Small"
-                        android:id="@+id/number_picker_hour_start"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        >
-                    </NumberPicker>
-
-                    <NumberPicker
-                        android:id="@+id/number_picker_min_start"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-                    </NumberPicker>
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <!-- Hours End -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    style="@style/Base.TextAppearance.AppCompat.Title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/hour_end"/>
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <NumberPicker
-                        style="@style/Base.TextAppearance.AppCompat.Small"
-                        android:id="@+id/number_picker_hour_end"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-                    </NumberPicker>
-
-                    <NumberPicker
-                        android:id="@+id/number_picker_min_end"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-                    </NumberPicker>
-                </LinearLayout>
-
-            </LinearLayout>
-        </LinearLayout>
     </LinearLayout>
 
     <!-- Buttons -->
@@ -266,6 +192,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:gravity="center"
             android:layout_marginBottom="@dimen/abc_action_bar_default_height_material">
 
             <!--Tracking Time -->

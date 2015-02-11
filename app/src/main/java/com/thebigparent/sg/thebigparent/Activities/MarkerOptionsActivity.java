@@ -6,11 +6,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.telephony.SmsManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import com.thebigparent.sg.thebigparent.Classes.MapLocation;
@@ -19,12 +19,17 @@ import com.thebigparent.sg.thebigparent.R;
 
 public class MarkerOptionsActivity extends ActionBarActivity
 {
+    final static public int REQUEST_CODE_ALL_TIMES = 107;
+
     private String latitude, longitude;
     private Dal_location dal_location;
 
+    private boolean isActivityBack = false;
+    private MapLocation location;
+
     private TextView contactName, address, locationName, radius;
     private LinearLayout mainLayout;
-    private NumberPicker np_hour_start, np_min_start, np_hour_end, np_min_end;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -32,89 +37,56 @@ public class MarkerOptionsActivity extends ActionBarActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_marker_options);
 
+        Class callerClass;
         Intent i = getIntent();
 
         latitude = i.getStringExtra("latitude");
         longitude = i.getStringExtra("longitude");
+        String caller = i.getStringExtra("caller");
+        Log.i("caller", caller);
+       // callerClass = Class.forName(caller);
+//        try
+//        {
+//
+//        }
+//        catch (ClassNotFoundException e)
+//        {
+//            callerClass = this.getClass();
+//            e.printStackTrace();
+//        }
 
         dal_location = new Dal_location();
 
-        MapLocation location = dal_location.getLocation(latitude, longitude, this);
 
-        contactName = (TextView)findViewById(R.id.contact_name);
-        address = (TextView)findViewById(R.id.address_field);
-        locationName = (TextView)findViewById(R.id.locationName_field);
-        radius = (TextView)findViewById(R.id.radius_field);
-        mainLayout = (LinearLayout)findViewById(R.id.main_layout_marker_options);
-        np_hour_start = (NumberPicker)findViewById(R.id.number_picker_hour_start);
-        np_min_start = (NumberPicker)findViewById(R.id.number_picker_min_start);
-        np_hour_end = (NumberPicker)findViewById(R.id.number_picker_hour_end);
-        np_min_end = (NumberPicker)findViewById(R.id.number_picker_min_end);
 
-        setNumberPickers();
+        contactName = (TextView) findViewById(R.id.contact_name);
+        address = (TextView) findViewById(R.id.address_field);
+        locationName = (TextView) findViewById(R.id.locationName_field);
+        radius = (TextView) findViewById(R.id.radius_field);
+        mainLayout = (LinearLayout) findViewById(R.id.main_layout_marker_options);
+
 
 
         mainLayout.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
 
-        contactName.setText(location.getContact().toString());
-        address.setText("Latitude: "+location.getLatitude()+" Longitude: "+location.getLongitude());
-        locationName.setText(location.getLocationName().toString());
-        radius.setText(location.getRadius().toString());
+//        Log.w("classerClass", callerClass.toString());
+        Log.w("MapsActivity", MapsActivity.class.getName().trim().length()+" " + MapsActivity.class.getName().trim());
+        Log.w("Caller", caller.trim().length() + " " +caller.trim());
+        if(caller.trim().equals(MapsActivity.class.getName().trim()))
+        {
+            location = dal_location.getLocation(latitude, longitude, this);
+            Log.i("equals", "TRUE");
+            contactName.setText(location.getContact().toString());
+            address.setText("Latitude: " + location.getLatitude() + " Longitude: " + location.getLongitude());
+            locationName.setText(location.getLocationName().toString());
+            radius.setText(location.getRadius().toString());
+        }
+        else
+        {
+            Log.e("EQUALS", "FALSE");
+        }
     }
 
-    private void setNumberPickers()
-    {
-        np_hour_start.setMinValue(00);
-        np_hour_start.setMaxValue(23);
-
-        np_min_start.setMinValue(00);
-        np_min_start.setMaxValue(59);
-
-        np_hour_end.setMinValue(00);
-        np_hour_end.setMaxValue(23);
-
-        np_min_end.setMinValue(00);
-        np_min_end.setMaxValue(59);
-
-        np_hour_start.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
-        np_min_start.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
-
-        np_hour_end.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
-        np_min_end.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
-
-        np_hour_start.setFormatter(new NumberPicker.Formatter()
-        {
-            @Override
-            public String format(int value)
-            {
-                return String.format("%02d", value);
-            }
-        });
-        np_hour_end.setFormatter(new NumberPicker.Formatter()
-        {
-            @Override
-            public String format(int value)
-            {
-                return String.format("%02d", value);
-            }
-        });
-        np_min_start.setFormatter(new NumberPicker.Formatter()
-        {
-            @Override
-            public String format(int value)
-            {
-                return String.format("%02d", value);
-            }
-        });
-        np_min_end.setFormatter(new NumberPicker.Formatter()
-        {
-            @Override
-            public String format(int value)
-            {
-                return String.format("%02d", value);
-            }
-        });
-    }
 
 
     @Override
@@ -126,14 +98,16 @@ public class MarkerOptionsActivity extends ActionBarActivity
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_settings)
+        {
             return true;
         }
 
@@ -151,10 +125,8 @@ public class MarkerOptionsActivity extends ActionBarActivity
         alertDialog.setMessage("Are you sure you want to delete this location?");
         //alertDialog.setIcon(R.drawable.ic_error);
         // Setting OK Button
-        alertDialog.setButton(alertDialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener()
-        {
-            public void onClick(DialogInterface dialog, int which)
-            {
+        alertDialog.setButton(alertDialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
                 deleteLocationAndReturn();
 
             }
@@ -165,7 +137,7 @@ public class MarkerOptionsActivity extends ActionBarActivity
 
     }
 
-    public void  deleteLocationAndReturn()
+    public void deleteLocationAndReturn()
     {
         dal_location.deleteLocation(latitude, longitude, this);
         this.finish();
@@ -178,16 +150,46 @@ public class MarkerOptionsActivity extends ActionBarActivity
         sms.sendTextMessage(phoneNumber, null, message, null, null);
     }
 
+    public void onClick_tracking_time(View view)
+    {
+        Intent i = new Intent(this, TimeActivity.class);
+
+        i.putExtra("latitude", latitude);
+        i.putExtra("longitude", longitude);
+        isActivityBack = true;
+        //startActivityForResult(i, REQUEST_CODE_ALL_TIMES);
+        startActivity(i);
+    }
+
     public void onClick_add_tracking_time(View view)
     {
         Intent i = new Intent(this, AddTimeActivity.class);
+        i.putExtra("latitude", latitude);
+        i.putExtra("longitude", longitude);
         startActivity(i);
 
     }
 
-    public void onClick_tracking_time(View view)
-    {
-        Intent i = new Intent(this, TimeActivity.class);
-        startActivity(i);
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {     // Called when Setting activity returns
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_ALL_TIMES)
+        {
+//            if (resultCode == RESULT_OK)
+//            {
+                latitude = data.getStringExtra("lat");
+                longitude = data.getStringExtra("lng");
+
+                location = dal_location.getLocation(latitude, longitude, this);
+
+                contactName.setText(location.getContact().toString());
+                address.setText("Latitude: " + location.getLatitude() + " Longitude: " + location.getLongitude());
+                locationName.setText(location.getLocationName().toString());
+                radius.setText(location.getRadius().toString());
+
+                // backFromActivity = true;            // Flag returned from Settings activity
+       //     }
+        }
     }
 }
