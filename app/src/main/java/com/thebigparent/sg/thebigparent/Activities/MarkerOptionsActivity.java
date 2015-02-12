@@ -59,9 +59,9 @@ public class MarkerOptionsActivity extends ActionBarActivity
 
 
 
-        contactName = (TextView) findViewById(R.id.contact_name);
-        address = (TextView) findViewById(R.id.address_field);
-        locationName = (TextView) findViewById(R.id.locationName_field);
+        locationName = (TextView) findViewById(R.id.location_name);
+       // address = (TextView) findViewById(R.id.address_field);
+        contactName = (TextView) findViewById(R.id.contact_name_field);
         radius = (TextView) findViewById(R.id.radius_field);
         mainLayout = (LinearLayout) findViewById(R.id.main_layout_marker_options);
 
@@ -69,22 +69,20 @@ public class MarkerOptionsActivity extends ActionBarActivity
 
         mainLayout.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
 
-//        Log.w("classerClass", callerClass.toString());
         Log.w("MapsActivity", MapsActivity.class.getName().trim().length()+" " + MapsActivity.class.getName().trim());
         Log.w("Caller", caller.trim().length() + " " +caller.trim());
         if(caller.trim().equals(MapsActivity.class.getName().trim()))
         {
             location = dal_location.getLocation(latitude, longitude, this);
             Log.i("equals", "TRUE");
-            contactName.setText(location.getContact().toString());
-            address.setText("Latitude: " + location.getLatitude() + " Longitude: " + location.getLongitude());
+            //contactName.setText(location.getContact().toString());
             locationName.setText(location.getLocationName().toString());
+            //address.setText("Latitude: " + location.getLatitude() + " Longitude: " + location.getLongitude());
+            //locationName.setText(location.getLocationName().toString());
+            contactName.setText(location.getContact().toString());
             radius.setText(location.getRadius().toString());
         }
-        else
-        {
-            Log.e("EQUALS", "FALSE");
-        }
+
     }
 
 

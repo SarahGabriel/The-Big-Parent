@@ -41,5 +41,6 @@
     <string name="pick_hours">1. Choose Hours of your tracking</string>
     <string name="pick_days">2. Choose Days of your tracking</string>
     <string name="no_repeat">No Repeat</string>
+    <string name="contact_name">Contact Name:</string>
 
 </resources>

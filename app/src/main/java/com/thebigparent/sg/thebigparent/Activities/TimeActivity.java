@@ -62,6 +62,7 @@ public class TimeActivity extends ActionBarActivity implements AdapterView.OnIte
         super.onResume();
 
         List<String> allHours = dal_time.getAllHoursAndDayByLatLng(latitude, longitude, this);
+        //List<Time> allTimes = dal_time.getAllTimeByLatLng(latitude, longitude, this);
         timeAdapter = new MyTimeAdapter(this, android.R.layout.activity_list_item, R.id.list_time, allHours);
         listView.setAdapter(timeAdapter);
         listView.setOnItemClickListener(this);
@@ -101,10 +102,7 @@ public class TimeActivity extends ActionBarActivity implements AdapterView.OnIte
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id)
     {
-//        TextView hours = (TextView)view.findViewById(R.id.start_hour);
-//        TextView day = (TextView)view.findViewById(R.id.all_days);
-//        Log.i("OnClick", hours.getText().toString() + ", " + day.getText().toString());
-//        Toast.makeText(this, "onClick: " + hours.getText().toString() + ", " + day.getText().toString(), Toast.LENGTH_LONG).show();
+
     }
 
 
@@ -134,6 +132,7 @@ public class TimeActivity extends ActionBarActivity implements AdapterView.OnIte
                     {
                         // continue with delete
                         dal_time.deleteTime(latitude, longitude, hours.getText().toString(), day.getText().toString(), getApplicationContext());
+                        Toast.makeText(getApplicationContext(), "Deleted time: " + hours.getText().toString() + ", " + day.getText().toString(), Toast.LENGTH_LONG).show();
                         onResume();
                     }
                 })
@@ -147,8 +146,6 @@ public class TimeActivity extends ActionBarActivity implements AdapterView.OnIte
                 })
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
-        //Log.i("OnLongClick", hours.getText().toString() + ", " + day.getText().toString());
-        Toast.makeText(this, "onLongClick: " + hours.getText().toString() + ", " + day.getText().toString(), Toast.LENGTH_LONG).show();
 
         return false;
     }

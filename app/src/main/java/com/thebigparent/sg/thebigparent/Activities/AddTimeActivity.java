@@ -13,6 +13,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
+import android.widget.Switch;
 
 import com.thebigparent.sg.thebigparent.Classes.Time;
 import com.thebigparent.sg.thebigparent.Dal.Dal_time;
@@ -20,6 +21,7 @@ import com.thebigparent.sg.thebigparent.R;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -31,6 +33,7 @@ public class AddTimeActivity extends ActionBarActivity// implements CompoundButt
     private LinearLayout linearNoRepeat, linearDaysOfWeek;
     private CheckBox checkBox_noRepeat, checkBox_sunday, checkBox_monday, checkBox_tuesday, checkBox_wednesday, checkBox_thursday, checkBox_friday, checkBox_saturday;
     private NumberPicker np_hour_start, np_min_start, np_hour_end, np_min_end;
+    private Switch switcher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -58,6 +61,7 @@ public class AddTimeActivity extends ActionBarActivity// implements CompoundButt
         np_min_start = (NumberPicker) findViewById(R.id.number_picker_min_start);
         np_hour_end = (NumberPicker) findViewById(R.id.number_picker_hour_end);
         np_min_end = (NumberPicker) findViewById(R.id.number_picker_min_end);
+        switcher = (Switch)findViewById(R.id.switcher);
 
         setNumberPickers();
 
@@ -188,35 +192,89 @@ public class AddTimeActivity extends ActionBarActivity// implements CompoundButt
 
         hour_start = hour_hour_start + ":" + hour_min_start;
         hour_end = hour_hour_end + ":" + hour_min_end;
-//        hour_start = np_hour_start.getValue() + ":" + np_min_start.getValue();
-//        hour_end = np_hour_end.getValue() + ":" + np_min_end.getValue();
+
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         try
         {
             Date date_start = sdf.parse(hour_start);
             Date date_end = sdf.parse(hour_end);
             Log.i("Hours", date_start.toString() + " - " + date_end.toString());
-            if(date_start.after(date_end))
-            {
-//                final AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-//
-//                // Setting Dialog Title
-//                alertDialog.setTitle("Wrong Tracking Hours");
-//
-//                // Setting Dialog Message
-//                alertDialog.setMessage("Start Hour needs to be before End Hour");
-//                //alertDialog.setIcon(R.drawable.ic_error);
-//                // Setting OK Button
-//                alertDialog.setButton(alertDialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        alertDialog.dismiss();
-//
-//                    }
-//                });
-//
-//                // Showing Alert Message
-//                alertDialog.show();
 
+            if(isDateInOrder(date_start,  date_end))
+            {
+                if(checkBox_noRepeat.isChecked())
+                {
+                    Calendar calendar = Calendar.getInstance();
+                    day = calendar.get(Calendar.DAY_OF_WEEK);  // If current day is Sunday, day=1. Saturday, day=7.
+
+                    Time time = new Time(day, hour_start, hour_end, latitude, longitude, 1, 1);
+                    Log.w("Time", time.toString());
+                    if(dal_time.addNewTime(time, this))
+                    {
+                        this.finish();
+                    }
+                }
+                else
+                {
+                    List<Time> addRepeatTime = new ArrayList<Time>();
+                    if(checkBox_sunday.isChecked())
+                    {
+                        Time time = new Time(1, hour_start, hour_end, latitude, longitude, 0, 1);
+                        addRepeatTime.add(time);
+                    }
+                    if(checkBox_monday.isChecked())
+                    {
+                        Time time = new Time(2, hour_start, hour_end, latitude, longitude, 0, 1);
+                        //dal_time.addNewTime(time, this);
+                        addRepeatTime.add(time);
+                    }
+                    if(checkBox_tuesday.isChecked())
+                    {
+                        Time time = new Time(3, hour_start, hour_end, latitude, longitude, 0, 1);
+                        //dal_time.addNewTime(time, this);
+                        addRepeatTime.add(time);
+                    }
+                    if(checkBox_wednesday.isChecked())
+                    {
+                        Time time = new Time(4, hour_start, hour_end, latitude, longitude, 0, 1);
+                        //dal_time.addNewTime(time, this);
+                        addRepeatTime.add(time);
+                    }
+                    if(checkBox_thursday.isChecked())
+                    {
+                        Time time = new Time(5, hour_start, hour_end, latitude, longitude, 0, 1);
+                        //dal_time.addNewTime(time, this);
+                        addRepeatTime.add(time);
+                    }
+                    if(checkBox_friday.isChecked())
+                    {
+                        Time time = new Time(6, hour_start, hour_end, latitude, longitude, 0, 1);
+                        //dal_time.addNewTime(time, this);
+                        addRepeatTime.add(time);
+                    }
+                    if(checkBox_saturday.isChecked())
+                    {
+                        Time time = new Time(7, hour_start, hour_end, latitude, longitude, 0, 1);
+//                        dal_time.addNewTime(time, this);
+                        addRepeatTime.add(time);
+                    }
+                    boolean wasError = false;
+                    for(Time eachTime : addRepeatTime)
+                    {
+                        if(!dal_time.addNewTime(eachTime, this))
+                        {
+                            wasError = true;
+                        }
+                    }
+                    if(!wasError)
+                    {
+                        this.finish();
+                    }
+                }
+                List<Time> times = dal_time.getAllTimeByLatLng(latitude, longitude, this);
+            }
+            else
+            {
                 new AlertDialog.Builder(this)
                         .setTitle("Wrong Tracking Hours")
                         .setMessage("Start Hour needs to be before End Hour")
@@ -235,64 +293,21 @@ public class AddTimeActivity extends ActionBarActivity// implements CompoundButt
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .show();
             }
-            else
-            {
-                if(checkBox_noRepeat.isChecked())
-                {
-                    Calendar calendar = Calendar.getInstance();
-                    day = calendar.get(Calendar.DAY_OF_WEEK);  // If current day is Sunday, day=1. Saturday, day=7.
-
-                    Time time = new Time(day, hour_start, hour_end, latitude, longitude, 1);
-                    Log.w("Time", time.toString());
-                    dal_time.addNewTime(time, this);
-                }
-                else
-                {
-                    if(checkBox_sunday.isChecked())
-                    {
-                        Time time = new Time(1, hour_start, hour_end, latitude, longitude, 0);
-                        dal_time.addNewTime(time, this);
-                    }
-                    if(checkBox_monday.isChecked())
-                    {
-                        Time time = new Time(2, hour_start, hour_end, latitude, longitude, 0);
-                        dal_time.addNewTime(time, this);
-                    }
-                    if(checkBox_tuesday.isChecked())
-                    {
-                        Time time = new Time(3, hour_start, hour_end, latitude, longitude, 0);
-                        dal_time.addNewTime(time, this);
-                    }
-                    if(checkBox_wednesday.isChecked())
-                    {
-                        Time time = new Time(4, hour_start, hour_end, latitude, longitude, 0);
-                        dal_time.addNewTime(time, this);
-                    }
-                    if(checkBox_thursday.isChecked())
-                    {
-                        Time time = new Time(5, hour_start, hour_end, latitude, longitude, 0);
-                        dal_time.addNewTime(time, this);
-                    }
-                    if(checkBox_friday.isChecked())
-                    {
-                        Time time = new Time(6, hour_start, hour_end, latitude, longitude, 0);
-                        dal_time.addNewTime(time, this);
-                    }
-                    if(checkBox_saturday.isChecked())
-                    {
-                        Time time = new Time(7, hour_start, hour_end, latitude, longitude, 0);
-                        dal_time.addNewTime(time, this);
-                    }
-                }
-                List<Time> times = dal_time.getAllTimeByLatLng(latitude, longitude, this);
-                this.finish();
-            }
         }
         catch (ParseException e)
         {
             e.printStackTrace();
         }
 
+    }
+
+    private boolean isDateInOrder(Date date_start, Date date_end)
+    {
+        if(date_start.after(date_end))
+        {
+            return false;
+        }
+        return true;
     }
 
 

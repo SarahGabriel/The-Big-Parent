@@ -15,4 +15,5 @@ public class Constants_time implements BaseColumns
     public static final String COLUMN_NAME_LATITUDE = "Latitude";
     public static final String COLUMN_NAME_LONGITUDE = "Longitude";
     public static final String COLUMN_NAME_NO_REPEAT = "NoRepeat";
+    public static final String COLUMN_NAME_SWITCHER = "Switcher";
 }

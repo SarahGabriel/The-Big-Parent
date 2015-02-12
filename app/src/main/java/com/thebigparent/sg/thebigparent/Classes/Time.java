@@ -11,8 +11,9 @@ public class Time
     private String longitude;
     private String latitude;
     private int noRepeat;
+    private int isSwitchOn;
 
-    public Time(int day, String hourStart, String hourEnd, String latitude, String longitude, int noRepeat)
+    public Time(int day, String hourStart, String hourEnd, String latitude, String longitude, int noRepeat, int isSwitchOn)
 
     {
         this.day = day;
@@ -21,6 +22,7 @@ public class Time
         this.longitude = longitude;
         this.latitude = latitude;
         this.noRepeat = noRepeat;
+        this.isSwitchOn = isSwitchOn;
     }
 
     public int getDay() {
@@ -71,16 +73,24 @@ public class Time
         this.noRepeat = noRepeat;
     }
 
+    public int getIsSwitchOn() {
+        return isSwitchOn;
+    }
+
+    public void setIsSwitchOn(int isSwitchOn) {
+        this.isSwitchOn = isSwitchOn;
+    }
+
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "Time{" +
-                "day='" + day + '\'' +
+                "day=" + day +
                 ", hourStart='" + hourStart + '\'' +
                 ", hourEnd='" + hourEnd + '\'' +
                 ", longitude='" + longitude + '\'' +
                 ", latitude='" + latitude + '\'' +
                 ", noRepeat=" + noRepeat +
+                ", isSwitchOn=" + isSwitchOn +
                 '}';
     }
 }
