@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.thebigparent.sg.thebigparent.Classes.Time;
 import com.thebigparent.sg.thebigparent.DB.Constants_time;
 import com.thebigparent.sg.thebigparent.DB.MyDbHelper;
@@ -294,54 +295,6 @@ public class Dal_time
         db.close();
     }
 
-    public int convertStringDayToInt(String day)
-    {
-        Calendar date;
-        int day_int = 0;
-        switch (day)
-        {
-            case "Sunday":
-                day_int = 1;break;
-            case  "Monday":
-                day_int = 2;break;
-            case "Tuesday":
-                day_int = 3;break;
-            case "Wednesday":
-                day_int = 4;break;
-            case "Thursday":
-                day_int = 5;break;
-            case "Friday":
-                day_int = 6;break;
-            case "Saturday":
-                day_int = 7;break;
-        }
-        return day_int;
-
-
-
-    }
-    private String convertIntDayToString(int intDay)
-    {
-       // int int_day = Integer.parseInt(intDay);
-        String day = "";
-        switch (intDay) {
-            case 1:
-                day = "Sunday";break;
-            case 2:
-                day = "Monday";break;
-            case 3:
-                day = "Tuesday";break;
-            case 4:
-                day = "Wednesday";break;
-            case 5:
-                day = "Thursday";break;
-            case 6:
-                day = "Friday";break;
-            case 7:
-                day = "Saturday";break;
-        }
-        return day;
-    }
 
     public void changeSwitchOn(String day, String hour_start, String hour_end, String latitude, String longitude, Context context)
     {
@@ -355,12 +308,6 @@ public class Dal_time
 
         ContentValues values = new ContentValues();
         values.put(Constants_time.COLUMN_NAME_SWITCHER, 1);
-
-//        db.update(Constants_time.TABLE_NAME, values, Constants_time.COLUMN_NAME_DAY + " = ? AND " +
-//                Constants_time.COLUMN_NAME_HOUR_START + " = ? AND " +
-//                Constants_time.COLUMN_NAME_HOUR_END + " = ? AND " +
-//                Constants_time.COLUMN_NAME_LATITUDE + " = ? AND " +
-//                Constants_time.COLUMN_NAME_LONGITUDE + " = ?", new String[] {day, hour_start, hour_end, latitude, longitude});
 
         db.update(Constants_time.TABLE_NAME, values, Constants_time.COLUMN_NAME_LATITUDE + " = ? AND " +
                         Constants_time.COLUMN_NAME_LONGITUDE + " = ? AND " +
@@ -389,4 +336,83 @@ public class Dal_time
 
         db.close();
     }
+
+    public LatLng getSwitchOnLocationByDateAndTime(int dayOfWeek, String hourOfDay, Context context) throws ParseException
+    {
+        Log.i("getSwitchOnLocationByDateAndTime", dayOfWeek + " - " + hourOfDay);
+        MyDbHelper dbHelper = new MyDbHelper(context);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        LatLng latLng = null;
+        String[] cols={Constants_time.COLUMN_NAME_LONGITUDE, Constants_time.COLUMN_NAME_LATITUDE};
+
+
+        String selectQuery = "SELECT * FROM " + Constants_time.TABLE_NAME +
+                " WHERE " + Constants_time.COLUMN_NAME_DAY + " = ? AND HourStart <= ? AND HourEnd >= ?";
+        Cursor c = db.rawQuery(selectQuery, new String[] { String.valueOf(dayOfWeek), hourOfDay.toString(), hourOfDay.toString() });
+        if(c.getCount() == 0)
+        {
+            return null;
+        }
+        if (c.moveToFirst())
+        {
+            String lat = c.getString(c.getColumnIndex("Latitude"));
+            String lng = c.getString(c.getColumnIndex("Longitude"));
+
+            latLng = new LatLng(Double.parseDouble(lat), Double.parseDouble(lng));
+            Log.i("LAT - LONGGG", latLng.toString());
+        }
+       return latLng;
+
+
+    }
+    private int convertStringDayToInt(String day)
+    {
+        Calendar date;
+        int day_int = 0;
+        switch (day)
+        {
+            case "Sunday":
+                day_int = 1;break;
+            case  "Monday":
+                day_int = 2;break;
+            case "Tuesday":
+                day_int = 3;break;
+            case "Wednesday":
+                day_int = 4;break;
+            case "Thursday":
+                day_int = 5;break;
+            case "Friday":
+                day_int = 6;break;
+            case "Saturday":
+                day_int = 7;break;
+        }
+        return day_int;
+
+
+
+    }
+    private String convertIntDayToString(int intDay)
+    {
+        // int int_day = Integer.parseInt(intDay);
+        String day = "";
+        switch (intDay) {
+            case 1:
+                day = "Sunday";break;
+            case 2:
+                day = "Monday";break;
+            case 3:
+                day = "Tuesday";break;
+            case 4:
+                day = "Wednesday";break;
+            case 5:
+                day = "Thursday";break;
+            case 6:
+                day = "Friday";break;
+            case 7:
+                day = "Saturday";break;
+        }
+        return day;
+    }
+
 }

@@ -44,6 +44,7 @@ public class MarkerOptionsActivity extends ActionBarActivity
         longitude = i.getStringExtra("longitude");
         String caller = i.getStringExtra("caller");
         Log.i("caller", caller);
+
        // callerClass = Class.forName(caller);
 //        try
 //        {
@@ -186,7 +187,6 @@ public class MarkerOptionsActivity extends ActionBarActivity
                 locationName.setText(location.getLocationName().toString());
                 radius.setText(location.getRadius().toString());
 
-                // backFromActivity = true;            // Flag returned from Settings activity
        //     }
         }
     }

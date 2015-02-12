@@ -20,6 +20,8 @@ import com.thebigparent.sg.thebigparent.DB.MyTimeAdapter;
 import com.thebigparent.sg.thebigparent.Dal.Dal_time;
 import com.thebigparent.sg.thebigparent.R;
 
+import java.text.ParseException;
+import java.util.Calendar;
 import java.util.List;
 
 public class TimeActivity extends ActionBarActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
@@ -40,6 +42,16 @@ public class TimeActivity extends ActionBarActivity implements AdapterView.OnIte
 
         dal_time = new Dal_time();
 
+        //Date date = new Date()
+        try
+        {
+            Calendar now = Calendar.getInstance();
+
+            dal_time.getSwitchOnLocationByDateAndTime(now.get(Calendar.DAY_OF_WEEK), String.format("%02d", now.get(Calendar.HOUR_OF_DAY))+":"+String.format("%02d", now.get(Calendar.MINUTE)), this);
+        }
+        catch (ParseException e) {
+            e.printStackTrace();
+        }
         listView = (ListView)findViewById(R.id.list_time);
 
         Intent i = getIntent();

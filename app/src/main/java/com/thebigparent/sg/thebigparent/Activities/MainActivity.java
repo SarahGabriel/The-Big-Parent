@@ -8,11 +8,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.location.LocationManager;
 import android.provider.Settings;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -21,8 +18,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.RemoteViews;
 
-import com.thebigparent.sg.thebigparent.Activities.MapsActivity;
-import com.thebigparent.sg.thebigparent.BL.BL_App;
+import com.thebigparent.sg.thebigparent.BL.Bl_app;
 import com.thebigparent.sg.thebigparent.R;
 import com.thebigparent.sg.thebigparent.Services.GpsService;
 import com.thebigparent.sg.thebigparent.Widget.WorkingStatusAppWidget;
@@ -73,11 +69,11 @@ public class MainActivity extends Activity {
     public void onClick_startGps(View view) {
 
 
-        BL_App.makeSound(this , R.raw.app_interactive_alert_tone_on);
+        Bl_app.makeSound(this, R.raw.app_interactive_alert_tone_on);
 
         if(!canGetLocation(this))
         {
-            BL_App.makeSound(this , R.raw.multimedia_pop_up_alert_tone_1);
+            Bl_app.makeSound(this, R.raw.multimedia_pop_up_alert_tone_1);
 
             showSettingsAlert();
 //            Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
@@ -112,7 +108,7 @@ public class MainActivity extends Activity {
 
     public void onClick_stopGps(View view) {
 
-        BL_App.makeSound(this , R.raw.app_interactive_alert_tone_off);
+        Bl_app.makeSound(this, R.raw.app_interactive_alert_tone_off);
 
         i = new Intent(this, GpsService.class);
         stopService(i);

@@ -8,7 +8,7 @@ import java.io.IOException;
 /**
  * Created by Guy on 12/02/15.
  */
-public class BL_App {
+public class Bl_app {
 
     public static void makeSound(Context context, int id)
     {
