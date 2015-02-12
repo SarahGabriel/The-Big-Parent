@@ -26,7 +26,7 @@
 
     <TextView
             style="@style/Base.TextAppearance.AppCompat.Display1"
-            android:id="@+id/contact_name"
+            android:id="@+id/location_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -41,25 +41,25 @@
 
 
         <!-- Address -->
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+        <!--<LinearLayout-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:orientation="horizontal">-->
 
-            <TextView
-                style="@style/Base.TextAppearance.AppCompat.Title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/address"
-                android:layout_marginRight="@dimen/activity_horizontal_margin"/>
+            <!--<TextView-->
+                <!--style="@style/Base.TextAppearance.AppCompat.Title"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:text="@string/address"-->
+                <!--android:layout_marginRight="@dimen/activity_horizontal_margin"/>-->
 
-            <TextView
-                style="@style/Base.TextAppearance.AppCompat.Body1"
-                android:id="@+id/address_field"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+            <!--<TextView-->
+                <!--style="@style/Base.TextAppearance.AppCompat.Body1"-->
+                <!--android:id="@+id/address_field"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content" />-->
 
-        </LinearLayout>
+        <!--</LinearLayout>-->
 
         <!-- Location Name -->
         <LinearLayout
@@ -71,12 +71,12 @@
                 style="@style/Base.TextAppearance.AppCompat.Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/locationName"
+                android:text="@string/contact_name"
                 android:layout_marginRight="@dimen/activity_horizontal_margin"/>
 
             <TextView
                 style="@style/Base.TextAppearance.AppCompat.Body2"
-                android:id="@+id/locationName_field"
+                android:id="@+id/contact_name_field"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
@@ -112,136 +112,7 @@
 
         </LinearLayout>
 
-        <!-- Days -->
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginBottom="@dimen/abc_action_bar_default_height_material">
 
-            <TextView
-                style="@style/Base.TextAppearance.AppCompat.Title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/days"/>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-               <CheckBox
-                   android:id="@+id/sunday"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:text="@string/sunday"/>
-
-               <CheckBox
-                   android:id="@+id/monday"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/monday"/>
-               <CheckBox
-                   android:id="@+id/tuesday"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/tuesday"/>
-               <CheckBox
-                   android:id="@+id/wednesday"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/wednesday"/>
-               <CheckBox
-                   android:id="@+id/thursday"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/thursday"/>
-               <CheckBox
-                   android:id="@+id/friday"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/friday"/>
-               <CheckBox
-                   android:id="@+id/saturday"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/saturday"/>
-            </LinearLayout>
-        </LinearLayout>
-
-        <!-- Hours -->
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="center">
-
-            <!-- Hours Start -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    style="@style/Base.TextAppearance.AppCompat.Title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/hour_start"/>
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="@dimen/activity_horizontal_margin"
-                    android:orientation="horizontal">
-
-                    <NumberPicker
-                        style="@style/Base.TextAppearance.AppCompat.Small"
-                        android:id="@+id/number_picker_hour_start"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        >
-                    </NumberPicker>
-
-                    <NumberPicker
-                        android:id="@+id/number_picker_min_start"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-                    </NumberPicker>
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <!-- Hours End -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    style="@style/Base.TextAppearance.AppCompat.Title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/hour_end"/>
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <NumberPicker
-                        style="@style/Base.TextAppearance.AppCompat.Small"
-                        android:id="@+id/number_picker_hour_end"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-                    </NumberPicker>
-
-                    <NumberPicker
-                        android:id="@+id/number_picker_min_end"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-                    </NumberPicker>
-                </LinearLayout>
-
-            </LinearLayout>
-        </LinearLayout>
     </LinearLayout>
 
     <!-- Buttons -->
@@ -251,15 +122,43 @@
         android:orientation="vertical"
         android:layout_gravity="center">
 
-        <Switch
-            style="@style/Base.TextAppearance.AppCompat.Title"
-            android:id="@+id/mySwitch"
-            android:layout_width="wrap_content"
+        <!--<Switch-->
+            <!--style="@style/Base.TextAppearance.AppCompat.Title"-->
+            <!--android:id="@+id/mySwitch"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+
+            <!--android:layout_marginTop="20dp"-->
+            <!--android:text="Play with the Switch"-->
+            <!--android:layout_marginBottom="@dimen/abc_action_bar_default_height_material"-->
+            <!--android:layout_gravity="center"/>-->
+
+        <LinearLayout
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="@dimen/abc_action_bar_default_height_material">
 
-            android:layout_marginTop="20dp"
-            android:text="Play with the Switch" />
+            <!--Tracking Time -->
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tracking_time"
+                android:onClick="onClick_tracking_time"
+                android:layout_marginRight="@dimen/abc_action_button_min_width_material"
+                android:background="@color/material_deep_teal_200"/>
 
+            <!-- Add Tracking Time -->
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/add_tracking_time"
+                android:onClick="onClick_add_tracking_time"
+                android:background="@color/wallet_holo_blue_light"/>
+
+        </LinearLayout>
+        <!--Delete Location-->
         <Button
             android:id="@+id/delete_location_button"
             android:layout_width="fill_parent"

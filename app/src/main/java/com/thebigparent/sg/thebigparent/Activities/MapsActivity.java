@@ -178,15 +178,15 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLon
 
 
 
-//        // adding marker after long click pressed
-//        myMarker = mMap.addMarker(new MarkerOptions()
-//        .position(latLng));
-//
-//        // Go to activity - adding marker settings
-//        Intent i = new Intent(this, AddLocationActivity.class);
-//        i.putExtra("latitude", Double.toString(myMarker.getPosition().latitude));
-//        i.putExtra("longitude", Double.toString(myMarker.getPosition().longitude));
-//        startActivity(i);
+        // adding marker after long click pressed
+        myMarker = mMap.addMarker(new MarkerOptions()
+        .position(latLng));
+
+        // Go to activity - adding marker settings
+        Intent i = new Intent(this, AddLocationActivity.class);
+        i.putExtra("latitude", Double.toString(myMarker.getPosition().latitude));
+        i.putExtra("longitude", Double.toString(myMarker.getPosition().longitude));
+        startActivity(i);
 
 
 
@@ -219,6 +219,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLon
         Intent i = new Intent(this, MarkerOptionsActivity.class);
         i.putExtra("latitude", Double.toString(marker.getPosition().latitude));
         i.putExtra("longitude", Double.toString(marker.getPosition().longitude));
+        i.putExtra("caller", getIntent().getComponent().getClassName());
         startActivity(i);
     }
 
