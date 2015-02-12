@@ -33,6 +33,10 @@
     <string name="delete_location">Delete Location</string>
     <string name="hour_end">Hours End:</string>
     <string name="action_locations">Locations list</string>
+    <string name="startGps">Start Gps</string>
+    <string name="stopGps">Stop Gps</string>
+    <string name="appwidget_text">The Big Parent</string>
+    <string name="add_widget">Add widget</string>
     <string name="title_activity_time">TimeActivity</string>
     <string name="title_activity_add_time">AddTimeActivity</string>
     <string name="tracking_time">All my Tracking Time</string>
@@ -42,5 +46,6 @@
     <string name="pick_days">2. Choose Days of your tracking</string>
     <string name="no_repeat">No Repeat</string>
     <string name="contact_name">Contact Name:</string>
+
 
 </resources>

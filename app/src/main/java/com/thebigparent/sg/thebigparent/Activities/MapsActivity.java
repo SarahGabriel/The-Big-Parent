@@ -6,10 +6,18 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -29,10 +37,15 @@ import java.util.List;
 public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLongClickListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener, GoogleMap.InfoWindowAdapter
 {
 
+    public static boolean mMapIsTouched = false;
+
+    Location mCurrentLocation;
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private Marker myMarker;
     private Dal_location dal_location;
+    private boolean after3sec = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +57,9 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLon
         mMap.setOnMapLongClickListener(this);
         mMap.setOnInfoWindowClickListener(this);
 
+
     }
+
 
     @Override
     protected void onResume()
@@ -104,16 +119,18 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLon
         String provider = locationManager.getBestProvider(criteria, true);
 
         // Get Current Location
-        Location myLocation = locationManager.getLastKnownLocation(provider);
+
+        Location mCurrentLocation = getLastKnownLocation();
+        //Location mCurrentLocation = locationManager.getLastKnownLocation(provider);
 
         // set map type
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
         // Get latitude of the current location
-        double latitude = myLocation.getLatitude();
+        double latitude = mCurrentLocation.getLatitude();
 
         // Get longitude of the current location
-        double longitude = myLocation.getLongitude();
+        double longitude = mCurrentLocation.getLongitude();
 
         // Create a LatLng object for the current location
         LatLng latLng = new LatLng(latitude, longitude);
@@ -158,6 +175,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLon
 //                return;
 //            }
 //        }
+
+
 
         // adding marker after long click pressed
         myMarker = mMap.addMarker(new MarkerOptions()
@@ -204,6 +223,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLon
         startActivity(i);
     }
 
+
     @Override
     public View getInfoWindow(Marker marker) {
         return null;
@@ -213,6 +233,26 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLon
     public View getInfoContents(Marker marker) {
         return null;
     }
+
+
+    private Location getLastKnownLocation() {
+        LocationManager mLocationManager = (LocationManager)getApplicationContext().getSystemService(LOCATION_SERVICE);
+        List<String> providers = mLocationManager.getProviders(true);
+        Location bestLocation = null;
+        for (String provider : providers) {
+            Location l = mLocationManager.getLastKnownLocation(provider);
+            if (l == null) {
+                continue;
+            }
+            if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+                // Found best last known location: %s", l);
+                bestLocation = l;
+            }
+        }
+        return bestLocation;
+    }
+
+
 
 //    @Override
 //    public boolean onMarkerClick(final Marker marker)
@@ -225,6 +265,26 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLon
 //            startActivity(i);
 //        }
 //        return false;
+//    }
+
+
+//    private class TouchableWrapper extends FrameLayout {
+//        public TouchableWrapper(Context context) {
+//            super(context);
+//        }
+//
+//        @Override
+//        public boolean dispatchTouchEvent(MotionEvent ev) {
+//            switch (ev.getAction()) {
+//                case MotionEvent.ACTION_DOWN:
+//                    break;
+//
+//                case MotionEvent.ACTION_UP:
+//                    break;
+//            }
+//
+//            return super.dispatchTouchEvent(ev);
+//        }
 //    }
 }
 

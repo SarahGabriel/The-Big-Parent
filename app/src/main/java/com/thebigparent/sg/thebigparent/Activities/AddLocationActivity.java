@@ -1,5 +1,6 @@
 package com.thebigparent.sg.thebigparent.Activities;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -16,7 +17,7 @@ import com.thebigparent.sg.thebigparent.R;
 
 import java.util.Locale;
 
-public class AddLocationActivity extends ActionBarActivity
+public class AddLocationActivity extends Activity
 {
     final static public int REQUEST_CODE = 109;
     private LinearLayout mainLinearLayout;
