@@ -1,5 +1,6 @@
 package com.thebigparent.sg.thebigparent.Activities;
 
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
@@ -22,7 +23,7 @@ import com.thebigparent.sg.thebigparent.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContactListActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
+public class ContactListActivity extends Activity implements AdapterView.OnItemClickListener {
 
     private List<String> contacts;
     private ListView listView;

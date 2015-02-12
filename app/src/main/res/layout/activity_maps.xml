@@ -5,5 +5,5 @@
     android:id="@+id/map"
     tools:context="com.thebigparent.sg.thebigparent.Activities.MapsActivity"
     android:name="com.google.android.gms.maps.SupportMapFragment"
-
+    class="com.thebigparent.sg.thebigparent.Classes.MySupportMapFragment"
     />
