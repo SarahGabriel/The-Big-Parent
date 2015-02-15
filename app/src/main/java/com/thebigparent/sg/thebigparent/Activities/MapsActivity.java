@@ -2,27 +2,24 @@ package com.thebigparent.sg.thebigparent.Activities;
 
 import android.content.Context;
 import android.content.Intent;
-import android.location.Criteria;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
-import android.util.AttributeSet;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.location.LocationRequest;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -31,97 +28,86 @@ import com.thebigparent.sg.thebigparent.Classes.MapLocation;
 import com.thebigparent.sg.thebigparent.Dal.Dal_location;
 import com.thebigparent.sg.thebigparent.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
-
-public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLongClickListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener, GoogleMap.InfoWindowAdapter
+// activity that handles locations to be tracked
+public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLongClickListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener, GoogleMap.InfoWindowAdapter , GoogleMap.OnMapClickListener
 {
 
-    public static boolean mMapIsTouched = false;
+    private static Circle markerCircle;     // The radius circle of the clicked marker
 
-    Location mCurrentLocation;
+    Button plus,minus;          // For the radius size
+    TextView radiusText;
 
-    private GoogleMap mMap; // Might be null if Google Play services APK is not available.
-    private Marker myMarker;
-    private Dal_location dal_location;
-    private boolean after3sec = false;
+    List<LatLng> latLngList;        // List of all the markers locations
+    List<Circle> circlesRadius;     // List of all the markers radius circles
 
+    public static GoogleMap mMap;   // Might be null if Google Play services APK is not available.
+    private Marker myMarker;        // The new added marker
+    private Dal_location dal_location;      // To access the db
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {        // When activity created
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        setUpMapIfNeeded();
+        setUpMapIfNeeded();             // Set the map
 
-        dal_location = new Dal_location();
-        mMap.setOnMapLongClickListener(this);
+        plus = (Button)findViewById(R.id.plus);                 // Get the plus minus Buttons and the text to edit the radius
+        minus = (Button)findViewById(R.id.minus);
+        radiusText = (TextView)findViewById(R.id.radiusText);
+
+        dal_location = new Dal_location();                      // Access to db calls
+
+        mMap.setOnMapLongClickListener(this);                   // Set map listeners
         mMap.setOnInfoWindowClickListener(this);
+        mMap.setOnMarkerClickListener(this);
+        mMap.setOnMapClickListener(this);
+
 
 
     }
 
 
     @Override
-    protected void onResume()
+    protected void onResume()           // On activity resume
     {
         super.onResume();
-        mMap.clear();
+
+        mMap.clear();                   // Refresh markers on the map
         setUpMapIfNeeded();
         addMarkersOnMap();
+
+        plus.setVisibility(View.INVISIBLE);             // Set radius UI invisible
+        minus.setVisibility(View.INVISIBLE);
+        radiusText.setVisibility(View.INVISIBLE);
+
     }
 
-
-    /**
-     * Sets up the map if it is possible to do so (i.e., the Google Play services APK is correctly
-     * installed) and the map has not already been instantiated.. This will ensure that we only ever
-     * call {@link #setUpMap()} once when {@link #mMap} is not null.
-     * <p/>
-     * If it isn't installed {@link SupportMapFragment} (and
-     * {@link com.google.android.gms.maps.MapView MapView}) will show a prompt for the user to
-     * install/update the Google Play services APK on their device.
-     * <p/>
-     * A user can return to this FragmentActivity after following the prompt and correctly
-     * installing/updating/enabling the Google Play services. Since the FragmentActivity may not
-     * have been completely destroyed during this process (it is likely that it would only be
-     * stopped or paused), {@link #onCreate(Bundle)} may not be called again so we should call this
-     * method in {@link #onResume()} to guarantee that it will be called.
-     */
-    private void setUpMapIfNeeded()
+    private void setUpMapIfNeeded()         // Set the map
     {
-        // Do a null check to confirm that we have not already instantiated the map.
-        if (mMap == null) {
-            // Try to obtain the map from the SupportMapFragment.
-            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
-                    .getMap();
-            // Check if we were successful in obtaining the map.
-            if (mMap != null) {
-                setUpMap();
-            }
+
+        mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
+                .getMap();
+
+        if (mMap != null) {
+            setUpMap();
         }
+
+
     }
 
 
-    private void setUpMap() {
-        //mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
-
-        //mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker").snippet("Snippet"));
-
+    private void setUpMap()     // Set the map
+    {
         // Enable MyLocation Layer of Google Map
         mMap.setMyLocationEnabled(true);
 
         // Get LocationManager object from System Service LOCATION_SERVICE
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        // Create a criteria object to retrieve provider
-        Criteria criteria = new Criteria();
-
-        // Get the name of the best provider
-        String provider = locationManager.getBestProvider(criteria, true);
-
         // Get Current Location
-
         Location mCurrentLocation = getLastKnownLocation();
-        //Location mCurrentLocation = locationManager.getLastKnownLocation(provider);
 
         // set map type
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
@@ -138,49 +124,41 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLon
         // Show the current location in Google Map
         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(latLng, 14)));
 
-        //mMap.addCircle(new CircleOptions().center(latLng).radius(100));
+        // Add marker to current location
         mMap.addMarker(new MarkerOptions().position(latLng).title("You are here!").snippet("Consider yourself located").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
     }
 
-    private void addMarkersOnMap()
+    private void addMarkersOnMap()          // Add all locations as markers on the map
     {
-       List<LatLng> latLngList = dal_location.getAllLocationsMarker(getApplicationContext());
-       List<MapLocation> locationList = dal_location.getAllLocations(getApplicationContext());
-       for(int i = 0; i<latLngList.size(); i++)
+       latLngList = dal_location.getAllLocationsMarker(getApplicationContext());            // Get all location Latlng from db
+       circlesRadius = new ArrayList<Circle>();     // New list for all markers radii
+
+       Circle c;
+
+       List<MapLocation> locationList = dal_location.getAllLocations(getApplicationContext());      // Get all location from db
+
+        for(int i = 0; i<latLngList.size(); i++)            // Add all locations as markers to the map
        {
            MapLocation location = locationList.get(i);
            double longitude = Double.parseDouble(location.getLongitude());
            double latitude = Double.parseDouble(location.getLatitude());
            LatLng latLng = new LatLng(latitude, longitude);
+
 //           "\u200e" -- in order to support hebrew language in the marker
-           mMap.addMarker(new MarkerOptions().position(latLng).title("\u200e"+location.getLocationName()).snippet("\u200e"+location.getContact().toString()));
-           mMap.addCircle(new CircleOptions().center(latLng).radius(Integer.parseInt(location.getRadius().toString())));
+           mMap.addMarker(new MarkerOptions().position(latLng).title("\u200e"+location.getLocationName()).snippet("\u200e"+location.getContact().toString()));      // Add the marker
+           c = mMap.addCircle(new CircleOptions().center(latLng).radius(Integer.parseInt(location.getRadius().toString())));                                        // Add the radius
+
+           circlesRadius.add(c);        // Add the radius to the radii list
        }
     }
 
 
     @Override
-    public void onMapLongClick(LatLng latLng)
+    public void onMapLongClick(LatLng latLng)           // On map lng click add new location and marker
     {
-        mMap.setOnMarkerClickListener(this);
-
-//        // List of all the markers
-//        List<LatLng> latLngList = dal_location.getAllLocationsMarker(getApplicationContext());
-//        for(LatLng latLng1 : latLngList)
-//        {
-//            // Check if the long click is near to one of the markers we've added
-//            if(Math.abs(latLng1.latitude - latLng.latitude) < 0.00005 && Math.abs(latLng1.longitude - latLng.longitude) < 0.00005)
-//            {
-//                onMarkerLongClick(latLng1);
-//                return;
-//            }
-//        }
-
-
 
         // adding marker after long click pressed
-        myMarker = mMap.addMarker(new MarkerOptions()
-        .position(latLng));
+        myMarker = mMap.addMarker(new MarkerOptions().position(latLng));
 
         // Go to activity - adding marker settings
         Intent i = new Intent(this, AddLocationActivity.class);
@@ -192,29 +170,42 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLon
 
     }
 
-    private void onMarkerLongClick(LatLng latLng)
-    {
-        Toast.makeText(MapsActivity.this, "got clicked", Toast.LENGTH_SHORT).show(); //do some stuff
-
-    }
-
 
     @Override
-    public boolean onMarkerClick(Marker marker)
+    public boolean onMarkerClick(Marker marker)     // On marker click enable radius editing and go to settings
     {
-//        if (marker.equals(myMarker))
-//        {
-//            //handle click here
-//            Intent i = new Intent(this, AddLocationActivity.class);
-//            i.putExtra("latitude", Double.toString(myMarker.getPosition().latitude));
-//            i.putExtra("longitude", Double.toString(myMarker.getPosition().longitude));
-//            startActivity(i);
-//        }
+        if(markerCircle != null)        // Set old marker radius black
+        {
+            markerCircle.setStrokeColor(Color.BLACK);
+        }
+
+        LatLng latLng = marker.getPosition();       // Get marker position
+
+        int i = 0;
+        for(LatLng l : latLngList)          // Get the marker radius from thr radii list
+        {
+
+            if(l.latitude == latLng.latitude && l.longitude == latLng.longitude)
+            {
+                markerCircle = circlesRadius.get(i);
+                break;
+            }
+            i++;
+        }
+
+        markerCircle.setStrokeColor(Color.RED);     // Set the chosen radius red
+
+        plus.setVisibility(View.VISIBLE);           // Set radius edit UI visible
+        minus.setVisibility(View.VISIBLE);
+        radiusText.setVisibility(View.VISIBLE);
+
+        radiusText.setText("Radius: " + (int)markerCircle.getRadius() + " m");      // Set thr radius text
+
         return false;
     }
 
     @Override
-    public void onInfoWindowClick(Marker marker)
+    public void onInfoWindowClick(Marker marker)                // On info window click go to  MarkerOptionsActivity activity
     {
         Intent i = new Intent(this, MarkerOptionsActivity.class);
         i.putExtra("latitude", Double.toString(marker.getPosition().latitude));
@@ -235,7 +226,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLon
     }
 
 
-    private Location getLastKnownLocation() {
+    private Location getLastKnownLocation()     // Get the last known location
+    {
         LocationManager mLocationManager = (LocationManager)getApplicationContext().getSystemService(LOCATION_SERVICE);
         List<String> providers = mLocationManager.getProviders(true);
         Location bestLocation = null;
@@ -254,38 +246,35 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLon
 
 
 
-//    @Override
-//    public boolean onMarkerClick(final Marker marker)
-//    {
-//
-//        if (marker.equals(myMarker))
-//        {
-//            //handle click here
-//            Intent i = new Intent(this, AddLocationActivity.class);
-//            startActivity(i);
-//        }
-//        return false;
-//    }
+    @Override
+    public void onMapClick(LatLng latLng) {             // On map click stop radius UI editing
+
+        if(markerCircle != null)        // Set the radius color to black
+        {
+            markerCircle.setStrokeColor(Color.BLACK);
+        }
+
+        plus.setVisibility(View.INVISIBLE);               // Hide the set radius UI
+        minus.setVisibility(View.INVISIBLE);
+        radiusText.setVisibility(View.INVISIBLE);
+    }
+
+    public void plusOnclick(View view) {            // Increase radius
+
+        //markerCircle.remove();
+        markerCircle.setRadius(markerCircle.getRadius() * 1.2);
+        radiusText.setText("Radius: " + (int)markerCircle.getRadius() + " m");
+        //todo: add radius to db
+
+    }
+
+    public void minusOnclick(View view) {           // Decrease radius
+        markerCircle.setRadius(markerCircle.getRadius()*0.8);
+        radiusText.setText("Radius: " + (int)markerCircle.getRadius()+ " m");
+        //todo: add radius to db
+    }
 
 
-//    private class TouchableWrapper extends FrameLayout {
-//        public TouchableWrapper(Context context) {
-//            super(context);
-//        }
-//
-//        @Override
-//        public boolean dispatchTouchEvent(MotionEvent ev) {
-//            switch (ev.getAction()) {
-//                case MotionEvent.ACTION_DOWN:
-//                    break;
-//
-//                case MotionEvent.ACTION_UP:
-//                    break;
-//            }
-//
-//            return super.dispatchTouchEvent(ev);
-//        }
-//    }
 }
 
 
