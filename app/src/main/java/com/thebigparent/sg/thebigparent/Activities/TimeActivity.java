@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.thebigparent.sg.thebigparent.DB.MyTimeAdapter;
+import com.thebigparent.sg.thebigparent.Dal.Dal_location;
 import com.thebigparent.sg.thebigparent.Dal.Dal_time;
 import com.thebigparent.sg.thebigparent.R;
 
@@ -29,6 +30,7 @@ public class TimeActivity extends ActionBarActivity implements AdapterView.OnIte
     private ListView listView;
     private MyTimeAdapter timeAdapter;
     private Dal_time dal_time;
+    private Dal_location dal_location;
 
     private String latitude, longitude;
 
@@ -41,6 +43,7 @@ public class TimeActivity extends ActionBarActivity implements AdapterView.OnIte
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
         dal_time = new Dal_time();
+        dal_location = new Dal_location();
 
         //Date date = new Date()
         try
@@ -160,5 +163,32 @@ public class TimeActivity extends ActionBarActivity implements AdapterView.OnIte
                 .show();
 
         return false;
+    }
+
+    public void onClick_menu_delete_all_times(MenuItem item)
+    {
+        new AlertDialog.Builder(this)
+                .setTitle("Delete All Times")
+                .setMessage("Are you sure you want to delete all Times? You cannot undo it!")
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        // continue with delete
+                        dal_time.deleteAllTimes(latitude, longitude, getBaseContext());
+
+                        Toast.makeText(getApplicationContext(), "All times deleted", Toast.LENGTH_LONG).show();
+                        onResume();
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // do nothing
+//                        layout.setBackground(backgroundColor);
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+
     }
 }

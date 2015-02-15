@@ -6,10 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Switch;
 import android.widget.TextView;
 
-import com.thebigparent.sg.thebigparent.Classes.MapLocation;
 import com.thebigparent.sg.thebigparent.Dal.Dal_location;
 import com.thebigparent.sg.thebigparent.Dal.Dal_time;
 import com.thebigparent.sg.thebigparent.R;
@@ -24,8 +22,7 @@ public class MarkerAdapter extends ArrayAdapter<String>
     private LayoutInflater inflater;
     //private String[] times;
     private List<String> markers;
-    private String[] parser, parserHours;
-    private String day, latitude, longitude, hour_start, hour_end;
+    private String[] parser;
 
     Dal_time dal_time;
     Dal_location dal_location;
@@ -46,50 +43,34 @@ public class MarkerAdapter extends ArrayAdapter<String>
         View view = inflater.inflate(R.layout.row_marker, null);
         convertView = view;
 
-        String time = markers.get(position);
+        String marker = markers.get(position);
 
-        parser = time.split(",");
-        parserHours = parser[1].split("-");
+        parser = marker.split(",");
 
-        TextView hours_textView = (TextView) view.findViewById(R.id.hours);
-        TextView day_textView = (TextView)view.findViewById(R.id.all_days);
-        TextView location_textView = (TextView)view.findViewById(R.id.location);
-        TextView location_lat = (TextView)view.findViewById(R.id.location_lat);
-        TextView location_lng = (TextView)view.findViewById(R.id.location_lng);
-        Switch switcher = (Switch)view.findViewById(R.id.switcher);
+//        Getting all text view
+        TextView id_marker_textView = (TextView) view.findViewById(R.id.id_marker_field);
+        TextView location_marker_textView = (TextView)view.findViewById(R.id.location_marker);
+        TextView contact_marker_textView = (TextView)view.findViewById(R.id.contact_marker);
+        TextView lat_marker_textView = (TextView)view.findViewById(R.id.lat_marker);
+        TextView lng_marker_textView = (TextView)view.findViewById(R.id.lng_marker);
 
+//        Getting all fields content
+        String id_marker = parser[0].trim();
+        String lat_marker = parser[1].trim();
+        String lng_marker = parser[2].trim();
+        String location_marker = parser[3].trim();
+        String contact_marker = parser[4].trim();
 
+//        Filling all textView with fields content
+        id_marker_textView.setText(id_marker);
+        lat_marker_textView.setText(lat_marker);
+        lng_marker_textView.setText(lng_marker);
+        location_marker_textView.setText(location_marker);
+        contact_marker_textView.setText(contact_marker);
 
-        day = parser[0].trim();
-        hour_start = parserHours[0].trim();
-        hour_end = parserHours[1].trim();
-        latitude = parser[3].trim();
-        longitude = parser[4].trim();
+        Log.i("latitude_marker", lat_marker);
+        Log.i("longitude_marker", lng_marker);
 
-        Log.i("latitude_adapter", latitude);
-        Log.i("longitude_adapter", longitude);
-
-        MapLocation mapLocation = dal_location.getLocation(latitude, longitude, getContext());
-
-        //day_textView.setText(dayToString(day));
-        hours_textView.setText(parser[1]);
-        location_textView.setText(mapLocation.getLocationName());
-        location_lat.setText(latitude);
-        location_lng.setText(longitude);
-
-        int isSwitcherOn = Integer.parseInt(parser[2]);
-
-        if(isSwitcherOn == 1)
-        {
-        switcher.setChecked(true);
-        }
-        else
-        {
-        switcher.setChecked(false);
-        }
-
-        latitude = parser[3];
-        longitude = parser[4];
         return convertView;
     }
 

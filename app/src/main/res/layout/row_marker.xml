@@ -6,21 +6,17 @@
     android:orientation="vertical">
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center">
 
-        <ImageButton
+
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/ic_action_marker"/>
-        <TextView
-            style="@style/Base.TextAppearance.AppCompat.Headline"
-            android:id="@+id/id_marker"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="1."/>
+
 
         <TextView
             style="@style/Base.TextAppearance.AppCompat.Headline"
@@ -28,6 +24,27 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="UNIVERSITY"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="right">
+
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Headline"
+                android:id="@+id/id_marker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/location_id"/>
+
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Headline"
+                android:id="@+id/id_marker_field"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1"/>
+        </LinearLayout>
     </LinearLayout>
     <LinearLayout
         android:layout_width="wrap_content"
@@ -40,5 +57,16 @@
             android:layout_height="wrap_content"
             android:text="Dad"
             android:layout_marginLeft="@dimen/abc_action_button_min_width_material"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/lat_marker"
+            android:visibility="invisible"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/lng_marker"
+            android:visibility="invisible"/>
         </LinearLayout>
 </LinearLayout>

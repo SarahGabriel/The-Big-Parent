@@ -12,10 +12,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.thebigparent.sg.thebigparent.Classes.MapLocation;
 import com.thebigparent.sg.thebigparent.Dal.Dal_location;
 import com.thebigparent.sg.thebigparent.R;
+
+import java.sql.SQLException;
 
 public class MarkerOptionsActivity extends ActionBarActivity
 {
@@ -42,19 +45,6 @@ public class MarkerOptionsActivity extends ActionBarActivity
 
         latitude = i.getStringExtra("latitude");
         longitude = i.getStringExtra("longitude");
-        String caller = i.getStringExtra("caller");
-        Log.i("caller", caller);
-
-       // callerClass = Class.forName(caller);
-//        try
-//        {
-//
-//        }
-//        catch (ClassNotFoundException e)
-//        {
-//            callerClass = this.getClass();
-//            e.printStackTrace();
-//        }
 
         dal_location = new Dal_location();
 
@@ -70,20 +60,20 @@ public class MarkerOptionsActivity extends ActionBarActivity
 
         mainLayout.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
 
-        Log.w("MapsActivity", MapsActivity.class.getName().trim().length()+" " + MapsActivity.class.getName().trim());
-        Log.w("Caller", caller.trim().length() + " " +caller.trim());
-        if(caller.trim().equals(MapsActivity.class.getName().trim()))
-        {
-            location = dal_location.getLocation(latitude, longitude, this);
-            Log.i("equals", "TRUE");
-            //contactName.setText(location.getContact().toString());
-            locationName.setText(location.getLocationName().toString());
-            //address.setText("Latitude: " + location.getLatitude() + " Longitude: " + location.getLongitude());
-            //locationName.setText(location.getLocationName().toString());
-            contactName.setText(location.getContact().toString());
-            radius.setText(location.getRadius().toString());
-        }
-
+//        Log.w("MapsActivity", MapsActivity.class.getName().trim().length()+" " + MapsActivity.class.getName().trim());
+//        Log.w("Caller", caller.trim().length() + " " +caller.trim());
+//        if(caller.trim().equals(MapsActivity.class.getName().trim()))
+//        {
+//
+//        }
+        location = dal_location.getLocation(latitude, longitude, this);
+        Log.i("equals", "TRUE");
+        //contactName.setText(location.getContact().toString());
+        locationName.setText(location.getLocationName().toString());
+        //address.setText("Latitude: " + location.getLatitude() + " Longitude: " + location.getLongitude());
+        //locationName.setText(location.getLocationName().toString());
+        contactName.setText(location.getContact().toString());
+        radius.setText(location.getRadius().toString());
     }
 
 
@@ -126,7 +116,11 @@ public class MarkerOptionsActivity extends ActionBarActivity
         // Setting OK Button
         alertDialog.setButton(alertDialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                deleteLocationAndReturn();
+                try {
+                    deleteLocationAndReturn();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
 
             }
         });
@@ -136,7 +130,7 @@ public class MarkerOptionsActivity extends ActionBarActivity
 
     }
 
-    public void deleteLocationAndReturn()
+    public void deleteLocationAndReturn() throws SQLException
     {
         dal_location.deleteLocation(latitude, longitude, this);
         this.finish();
@@ -189,5 +183,38 @@ public class MarkerOptionsActivity extends ActionBarActivity
 
        //     }
         }
+    }
+
+    public void onClick_menu_delete_marker(MenuItem item)
+    {
+        new AlertDialog.Builder(this)
+                .setTitle("Delete Marker")
+                .setMessage("Are you sure you want to delete this Marker? It will also erase all your tracking time!")
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        // continue with delete
+                        try {
+                            dal_location.deleteLocation(latitude, longitude, getBaseContext());
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                        Toast.makeText(getApplicationContext(), "Deleted marker: " + location.getLocationName(), Toast.LENGTH_LONG).show();
+
+                        onBackPressed();
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        // do nothing
+//                        layout.setBackground(backgroundColor);
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+
     }
 }

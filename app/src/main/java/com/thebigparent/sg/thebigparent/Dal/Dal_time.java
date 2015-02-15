@@ -81,31 +81,39 @@ public class Dal_time
                 .show();
     }
 
-    private boolean isTimeExists(Time time, Context context) throws ParseException
+    private boolean isTimeExists(Time time_toCheck, Context context) throws ParseException
     {
-        List<Time> timesByDay = getTimesByDay(time.getDay(), context);
-        if(timesByDay!=null) {
+        Log.w("isTimeExists", "IN IT");
+        List<Time> timesByDay = getTimesByDay(time_toCheck.getDay(), context);
+        if(timesByDay!=null)
+        {
 
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 
-            Date startHour_toCheck = sdf.parse(time.getHourStart());
-            Date endHour_toCheck = sdf.parse(time.getHourEnd());
+            Date startHour_toCheck = sdf.parse(time_toCheck.getHourStart());
+            Date endHour_toCheck = sdf.parse(time_toCheck.getHourEnd());
 
 
-            for (Time timeByDay : timesByDay) {
+            for (Time timeByDay : timesByDay)
+            {
                 Date startHour_checkWith = sdf.parse(timeByDay.getHourStart());
                 Date endHour_checkWith = sdf.parse(timeByDay.getHourEnd());
 
+                Log.i("start_toCheck", startHour_toCheck.toString());
+                Log.i("start_checkWith", startHour_checkWith.toString());
+                Log.i("end_toCheck", endHour_toCheck.toString());
+                Log.i("end_checkWith", endHour_checkWith.toString());
 
-                if ((startHour_toCheck.after(startHour_checkWith) || startHour_toCheck.equals(startHour_checkWith)) && startHour_toCheck.before(startHour_checkWith)) {/* if the hours of tracking time is in range of an existing tracking time
-              * if(startHour_toCheck >= startHour_checkWith && startHour_toCheck < startHour_checkWith)*/
-                    return true;
-                } else if (endHour_toCheck.after(startHour_checkWith) && (endHour_toCheck.before(endHour_checkWith) || endHour_toCheck.equals(endHour_checkWith))) {
-                /* if the end_hour is conflicting with an other hours
-                *  if(endHour_toCheck > startHour_checkWith && endHour_toCheck <= endHour_checkWith)*/
+                if(startHour_toCheck.after(startHour_checkWith) && startHour_toCheck.before(endHour_checkWith))
+                {
+                    Log.i("if 1", startHour_toCheck + " after? " + startHour_checkWith + " && " + startHour_toCheck + " before? " + endHour_checkWith);
                     return true;
                 }
-
+                else if(endHour_toCheck.after(startHour_checkWith) && endHour_toCheck.before(endHour_checkWith))
+                {
+                    Log.i("if 2", endHour_toCheck + " after? " + startHour_checkWith + " && " + endHour_toCheck + " before? " + endHour_checkWith);
+                    return true;
+                }
             }
         }
         return false;
@@ -137,7 +145,7 @@ public class Dal_time
                 null                     // The sort order
         );
 
-        if (!(c.moveToFirst()) || c.getCount() == 0)
+        if (c.getCount() == 0)
         {
             //cursor is empty
             db.close();
@@ -283,11 +291,7 @@ public class Dal_time
         String[] parser = hours.split("-");
         hour_start = parser[0].trim();
         hour_end = parser[1].trim();
-        Log.i("HOUR_BEFORE", hour_start);
-        Log.i("HOUR_AFTER", hour_end);
         int day_int = convertStringDayToInt(day);
-        Log.i("DAY_BEFORE", day);
-        Log.i("DAY_AFTER", String.valueOf(day_int));
         db.delete(Constants_time.TABLE_NAME, Constants_time.COLUMN_NAME_LATITUDE + " = ? AND " +
                                              Constants_time.COLUMN_NAME_LONGITUDE + " = ? AND " +
                                              Constants_time.COLUMN_NAME_DAY + " = ? AND " +
@@ -297,6 +301,20 @@ public class Dal_time
         db.close();
     }
 
+    public void deleteAllTimes(String latitude, String longitude, Context context)
+    {
+        MyDbHelper dbHelper = new MyDbHelper(context);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        List<Time> allTimes = getAllTimeByLatLng(latitude, longitude, context);
+        for(Time time : allTimes)
+        {
+            String hours = time.getHourStart() + "-" + time.getHourEnd();
+            String day_string = convertIntDayToString(time.getDay());
+            deleteTime(time.getLatitude(), time.getLongitude(), hours, day_string, context);
+        }
+        db.close();
+    }
 
     public void changeSwitchOn(String day, String hour_start, String hour_end, String latitude, String longitude, Context context) throws SQLException
     {
@@ -426,6 +444,7 @@ public class Dal_time
     }
 
 
+
     private int convertStringDayToInt(String day)
     {
         Calendar date;
@@ -474,6 +493,7 @@ public class Dal_time
         }
         return day;
     }
+
 
 
 }

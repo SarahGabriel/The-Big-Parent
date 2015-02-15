@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * Created by Sarah on 12-Feb-15.
  */
-public class AllTimeAdapter extends ArrayAdapter<String> implements CompoundButton.OnCheckedChangeListener//implements CompoundButton.OnCheckedChangeListener
+public class AllTimeAdapter extends ArrayAdapter<String> implements CompoundButton.OnCheckedChangeListener
 {
     private LayoutInflater inflater;
     //private String[] times;

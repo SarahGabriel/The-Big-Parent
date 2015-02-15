@@ -9,29 +9,86 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.LocationManager;
-import android.provider.Settings;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.RemoteViews;
 
 import com.thebigparent.sg.thebigparent.BL.Bl_app;
+import com.thebigparent.sg.thebigparent.Dal.Dal_location;
+import com.thebigparent.sg.thebigparent.Dal.Dal_time;
 import com.thebigparent.sg.thebigparent.R;
 import com.thebigparent.sg.thebigparent.Services.GpsService;
 import com.thebigparent.sg.thebigparent.Widget.WorkingStatusAppWidget;
 
+import java.util.List;
+
 
 public class MainActivity extends Activity {
 
-    Intent i;
+    private Intent i;
+    private Dal_time dal_time;
+    private Dal_location dal_location;
+
+    private Button allMarkerButton, allTrackingButton;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        dal_time = new Dal_time();
+        dal_location = new Dal_location();
+
+        allTrackingButton = (Button)findViewById(R.id.all_tracking_time);
+        allMarkerButton = (Button)findViewById(R.id.all_marker);
+
+        List<String> trackingList = dal_time.getAllTime(this);
+        List<String> markersList = dal_location.getAllMarkers(this);
+
+        if(trackingList.size() == 0)
+        {
+            //allTrackingButton.setClickable(false);
+            allTrackingButton.setEnabled(false);
+        }
+
+        if(markersList.size() == 0)
+        {
+            allMarkerButton.setEnabled(false);
+        }
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+
+        List<String> trackingList = dal_time.getAllTime(this);
+        List<String> markersList = dal_location.getAllMarkers(this);
+
+        if(trackingList.size() == 0)
+        {
+            allTrackingButton.setEnabled(false);
+        }
+        else
+        {
+            allTrackingButton.setEnabled(true);
+        }
+
+        if(markersList.size() == 0)
+        {
+            allMarkerButton.setEnabled(false);
+        }
+        else
+        {
+            allMarkerButton.setEnabled(true);
+        }
     }
 
 
@@ -76,8 +133,7 @@ public class MainActivity extends Activity {
             Bl_app.makeSound(this, R.raw.multimedia_pop_up_alert_tone_1);
 
             showSettingsAlert();
-//            Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-//            startActivity(i);
+
         }
 
 
@@ -215,7 +271,7 @@ public class MainActivity extends Activity {
 
     public void onClick_allMarker(View view)
     {
-        Intent i = new Intent(this, AllTrackingTimeActivity.class);
+        Intent i = new Intent(this, AllMarkerActivity.class);
         startActivity(i);
     }
 }
