@@ -130,7 +130,7 @@ public class TimeActivity extends ActionBarActivity implements AdapterView.OnIte
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)
     {
 
-        final TextView hours = (TextView)view.findViewById(R.id.start_hour);
+        final TextView hours = (TextView)view.findViewById(R.id.hours);
         final TextView day = (TextView)view.findViewById(R.id.all_days);
         final LinearLayout layout = (LinearLayout)view.findViewById(R.id.layout_list_view);
         final Drawable backgroundColor = layout.getBackground();

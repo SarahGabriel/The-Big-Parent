@@ -206,4 +206,16 @@ public class MainActivity extends Activity {
 
         return super.onTouchEvent(event);
     }
+
+    public void onClick_allTrackingTime(View view)
+    {
+        Intent i = new Intent(this, AllTrackingTimeActivity.class);
+        startActivity(i);
+    }
+
+    public void onClick_allMarker(View view)
+    {
+        Intent i = new Intent(this, AllTrackingTimeActivity.class);
+        startActivity(i);
+    }
 }

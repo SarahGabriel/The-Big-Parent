@@ -22,7 +22,7 @@
 
             <TextView
                 style="@style/Base.TextAppearance.AppCompat.Display1"
-                android:id="@+id/start_hour"
+                android:id="@+id/hours"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="@dimen/abc_control_padding_material"/>
@@ -46,7 +46,7 @@
         </LinearLayout>
     </LinearLayout>
     <LinearLayout
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
         <TextView
@@ -54,6 +54,25 @@
             android:text="Sun, Mon, Wed"
             android:id="@+id/all_days"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"/>
+
+        <TextView
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:id="@+id/location"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+        <TextView
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:id="@+id/location_lat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"/>
+        <TextView
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:id="@+id/location_lng"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"/>
         </LinearLayout>
 </LinearLayout>

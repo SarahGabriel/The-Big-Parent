@@ -37,4 +37,7 @@
     <string name="pick_days">2. Choose Days of your tracking</string>
     <string name="no_repeat">No Repeat</string>
     <string name="contact_name">Contact Name:</string>
+    <string name="allTrackingTime">View all tracking time</string>
+    <string name="goTo_map">Go to MAP</string>
+    <string name="allMarker">View my markers</string>
 </resources>

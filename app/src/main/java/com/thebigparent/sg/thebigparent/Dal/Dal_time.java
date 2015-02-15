@@ -13,6 +13,7 @@ import com.thebigparent.sg.thebigparent.Classes.Time;
 import com.thebigparent.sg.thebigparent.DB.Constants_time;
 import com.thebigparent.sg.thebigparent.DB.MyDbHelper;
 
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -96,11 +97,11 @@ public class Dal_time
                 Date endHour_checkWith = sdf.parse(timeByDay.getHourEnd());
 
 
-                if ((startHour_toCheck.after(startHour_checkWith) || startHour_toCheck.equals(startHour_checkWith)) && startHour_toCheck.before(startHour_checkWith)) {/* if the start_hour of tracking time is in range of an existing tracking time
+                if ((startHour_toCheck.after(startHour_checkWith) || startHour_toCheck.equals(startHour_checkWith)) && startHour_toCheck.before(startHour_checkWith)) {/* if the hours of tracking time is in range of an existing tracking time
               * if(startHour_toCheck >= startHour_checkWith && startHour_toCheck < startHour_checkWith)*/
                     return true;
                 } else if (endHour_toCheck.after(startHour_checkWith) && (endHour_toCheck.before(endHour_checkWith) || endHour_toCheck.equals(endHour_checkWith))) {
-                /* if the end_hour is conflicting with an other start_hour
+                /* if the end_hour is conflicting with an other hours
                 *  if(endHour_toCheck > startHour_checkWith && endHour_toCheck <= endHour_checkWith)*/
                     return true;
                 }
@@ -139,6 +140,7 @@ public class Dal_time
         if (!(c.moveToFirst()) || c.getCount() == 0)
         {
             //cursor is empty
+            db.close();
             return null;
         }
         while (c.moveToNext())
@@ -296,10 +298,13 @@ public class Dal_time
     }
 
 
-    public void changeSwitchOn(String day, String hour_start, String hour_end, String latitude, String longitude, Context context)
+    public void changeSwitchOn(String day, String hour_start, String hour_end, String latitude, String longitude, Context context) throws SQLException
     {
+        Log.w("changeSwitchOn", "BEFORE");
         MyDbHelper dbHelper = new MyDbHelper(context);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        int day_int = convertStringDayToInt(day);
 
         String[] cols={Constants_time.COLUMN_NAME_DAY,
                 Constants_time.COLUMN_NAME_HOUR_START,
@@ -309,32 +314,41 @@ public class Dal_time
         ContentValues values = new ContentValues();
         values.put(Constants_time.COLUMN_NAME_SWITCHER, 1);
 
-        db.update(Constants_time.TABLE_NAME, values, Constants_time.COLUMN_NAME_LATITUDE + " = ? AND " +
+        int cursor = db.update(Constants_time.TABLE_NAME, values, Constants_time.COLUMN_NAME_LATITUDE + " = ? AND " +
                         Constants_time.COLUMN_NAME_LONGITUDE + " = ? AND " +
                         Constants_time.COLUMN_NAME_DAY + " = ? AND " +
                         Constants_time.COLUMN_NAME_HOUR_START + " = ? AND " +
                         Constants_time.COLUMN_NAME_HOUR_END + " = ?",
-                new String[]{latitude, longitude, day, hour_start, hour_end});
+                new String[]{latitude, longitude, String.valueOf(day_int), hour_start, hour_end});
+        Log.i("changeSwitchOn - cursor", String.valueOf(cursor));
 
         db.close();
+        Log.w("changeSwitchOn", "AFTER");
     }
 
-    public void changeSwitchOff(String day, String hour_start, String hour_end, String latitude, String longitude, Context context)
+    public void changeSwitchOff(String day, String hour_start, String hour_end, String latitude, String longitude, Context context) throws SQLException
     {
+
+        Log.w("changeSwitchOff", "BEFORE");
         MyDbHelper dbHelper = new MyDbHelper(context);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        int day_int = convertStringDayToInt(day);
 
         ContentValues values = new ContentValues();
         values.put(Constants_time.COLUMN_NAME_SWITCHER, 0);
 
-        db.update(Constants_time.TABLE_NAME, values, Constants_time.COLUMN_NAME_LATITUDE + " = ? AND " +
+        int cursor = db.update(Constants_time.TABLE_NAME, values,
+                        Constants_time.COLUMN_NAME_LATITUDE + " = ? AND " +
                         Constants_time.COLUMN_NAME_LONGITUDE + " = ? AND " +
                         Constants_time.COLUMN_NAME_DAY + " = ? AND " +
                         Constants_time.COLUMN_NAME_HOUR_START + " = ? AND " +
                         Constants_time.COLUMN_NAME_HOUR_END + " = ?",
-                new String[] { latitude, longitude, day, hour_start, hour_end});
+                new String[]{latitude, longitude, String.valueOf(day_int), hour_start, hour_end});
+        Log.i("changeSwitchOff - cursor", String.valueOf(cursor));
 
         db.close();
+        Log.w("changeSwitchOFF", "AFTER");
     }
 
     public LatLng getSwitchOnLocationByDateAndTime(int dayOfWeek, String hourOfDay, Context context) throws ParseException
@@ -352,6 +366,7 @@ public class Dal_time
         Cursor c = db.rawQuery(selectQuery, new String[] { String.valueOf(dayOfWeek), hourOfDay.toString(), hourOfDay.toString() });
         if(c.getCount() == 0)
         {
+            db.close();
             return null;
         }
         if (c.moveToFirst())
@@ -362,10 +377,55 @@ public class Dal_time
             latLng = new LatLng(Double.parseDouble(lat), Double.parseDouble(lng));
             Log.i("LAT - LONGGG", latLng.toString());
         }
+
+        db.close();
        return latLng;
-
-
     }
+
+    public List<String> getAllTime(Context context)
+    {
+        List<String> allHoursAndDays = new ArrayList<String>();
+        MyDbHelper dbHelper = new MyDbHelper(context);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        String[] cols={Constants_time.COLUMN_NAME_DAY,
+                Constants_time.COLUMN_NAME_HOUR_START,
+                Constants_time.COLUMN_NAME_HOUR_END,
+                Constants_time.COLUMN_NAME_SWITCHER,
+                Constants_time.COLUMN_NAME_LATITUDE,
+                Constants_time.COLUMN_NAME_LONGITUDE};
+
+
+        Cursor c = db.query(
+                Constants_time.TABLE_NAME,    // The table to query
+                cols,                    // The columns to return
+                null,
+                null,
+                null,                    // don't group the rows
+                null,                    // don't filter by row groups
+                Constants_time.COLUMN_NAME_DAY + " ASC, " + Constants_time.COLUMN_NAME_HOUR_START + " ASC"     // The sort order
+        );
+
+        while (c.moveToNext())
+        {
+            String day = c.getString(0).trim();
+            String hour_start = c.getString(1).trim();
+            String hour_end = c.getString(2).trim();
+            String switcher = c.getString(3).trim();
+            String latitude = c.getString(4).trim();
+            String longitude = c.getString(5).trim();
+            String time = day + "," + hour_start + " - " + hour_end + "," + switcher + "," + latitude + "," + longitude;
+            allHoursAndDays.add(time);
+        }
+
+        Log.w("allHoursAndDays", allHoursAndDays.toString());
+
+        db.close();
+
+        return allHoursAndDays;
+    }
+
+
     private int convertStringDayToInt(String day)
     {
         Calendar date;
@@ -414,5 +474,6 @@ public class Dal_time
         }
         return day;
     }
+
 
 }

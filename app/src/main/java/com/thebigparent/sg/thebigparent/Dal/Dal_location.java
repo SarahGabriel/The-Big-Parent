@@ -128,6 +128,7 @@ public class Dal_location
         if (!(c.moveToFirst()) || c.getCount() == 0)
         {
             //cursor is empty
+            db1.close();
             return null;
         }
         String lat = c.getString((0)).trim();
@@ -137,7 +138,7 @@ public class Dal_location
         String radius = c.getString((4)).trim();
 
         location = new MapLocation(locationName, lng, lat, radius, contact);
-
+        db1.close();
         return location;
     }
 
