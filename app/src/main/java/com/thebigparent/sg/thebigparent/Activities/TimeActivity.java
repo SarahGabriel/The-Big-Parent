@@ -191,4 +191,16 @@ public class TimeActivity extends ActionBarActivity implements AdapterView.OnIte
                 .show();
 
     }
+
+    public void onClick_menu_home(MenuItem item)
+    {
+        Intent i = new Intent(this, MainActivity.class);
+        startActivity(i);
+    }
+
+    public void onClick_menu_map(MenuItem item)
+    {
+        Intent i = new Intent(this, MapsActivity.class);
+        startActivity(i);
+    }
 }

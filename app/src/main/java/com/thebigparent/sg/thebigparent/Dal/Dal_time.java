@@ -132,6 +132,7 @@ public class Dal_time
                 Constants_time.COLUMN_NAME_HOUR_END,
                 Constants_time.COLUMN_NAME_LATITUDE,
                 Constants_time.COLUMN_NAME_LONGITUDE,
+                Constants_time.COLUMN_NAME_DATE,
                 Constants_time.COLUMN_NAME_NO_REPEAT,
                 Constants_time.COLUMN_NAME_SWITCHER};
 
@@ -153,8 +154,9 @@ public class Dal_time
         }
         while (c.moveToNext())
         {
+
             Log.w("SWITCH", c.getString(6));
-            Time timeByDay = new Time(day, c.getString(1), c.getString(2), c.getString(3), c.getString(4), Integer.parseInt(c.getString(5).trim()), Integer.parseInt(c.getString(6).trim()));
+            Time timeByDay = new Time(day, c.getString(1), c.getString(2), c.getString(3), c.getString(4), c.getString(5), Integer.parseInt(c.getString(6).trim()), Integer.parseInt(c.getString(7).trim()));
             Log.w("addTimeByDay", timeByDay.toString());
             timesByDay.add(timeByDay);
         }
@@ -176,6 +178,7 @@ public class Dal_time
                        Constants_time.COLUMN_NAME_HOUR_END,
                        Constants_time.COLUMN_NAME_LATITUDE,
                        Constants_time.COLUMN_NAME_LONGITUDE,
+                       Constants_time.COLUMN_NAME_DATE,
                        Constants_time.COLUMN_NAME_NO_REPEAT,
                        Constants_time.COLUMN_NAME_SWITCHER};
 
@@ -194,9 +197,10 @@ public class Dal_time
             int day = Integer.parseInt(c.getString((0)).trim());
             String hour_start = c.getString(1).trim();
             String hour_end = c.getString(2).trim();
-            int no_repeat = Integer.parseInt(c.getString(5).trim());
-            int switcher = Integer.parseInt(c.getString(6).trim());
-            Time time = new Time(day, hour_start, hour_end, latitude, longitude, no_repeat, switcher);
+            String date = c.getString(5);
+            int no_repeat = Integer.parseInt(c.getString(6).trim());
+            int switcher = Integer.parseInt(c.getString(7).trim());
+            Time time = new Time(day, hour_start, hour_end, latitude, longitude, date, no_repeat, switcher);
             allTimes.add(time);
         }
 
@@ -275,7 +279,8 @@ public class Dal_time
             int noRepeat = Integer.parseInt(c.getString(c.getColumnIndex("NoRepeat")));
             int switcher = Integer.parseInt(c.getString(c.getColumnIndex("Switcher")));
 
-            time = new Time(dayOfWeek, hour_start, hour_end, lat, lng, noRepeat, switcher);
+            // todo : check the date issue
+            time = new Time(dayOfWeek, hour_start, hour_end, lat, lng, "", noRepeat, switcher);
         }
 
         db.close();
@@ -356,7 +361,6 @@ public class Dal_time
 
     public void changeSwitchOn(String day, String hour_start, String hour_end, String latitude, String longitude, Context context) throws SQLException
     {
-        Log.w("changeSwitchOn", "BEFORE");
         MyDbHelper dbHelper = new MyDbHelper(context);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
@@ -376,16 +380,13 @@ public class Dal_time
                         Constants_time.COLUMN_NAME_HOUR_START + " = ? AND " +
                         Constants_time.COLUMN_NAME_HOUR_END + " = ?",
                 new String[]{latitude, longitude, String.valueOf(day_int), hour_start, hour_end});
-        Log.i("changeSwitchOn - cursor", String.valueOf(cursor));
 
         db.close();
-        Log.w("changeSwitchOn", "AFTER");
     }
 
     public void changeSwitchOff(String day, String hour_start, String hour_end, String latitude, String longitude, Context context) throws SQLException
     {
 
-        Log.w("changeSwitchOff", "BEFORE");
         MyDbHelper dbHelper = new MyDbHelper(context);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
@@ -401,15 +402,15 @@ public class Dal_time
                         Constants_time.COLUMN_NAME_HOUR_START + " = ? AND " +
                         Constants_time.COLUMN_NAME_HOUR_END + " = ?",
                 new String[]{latitude, longitude, String.valueOf(day_int), hour_start, hour_end});
-        Log.i("changeSwitchOff - cursor", String.valueOf(cursor));
 
         db.close();
-        Log.w("changeSwitchOFF", "AFTER");
     }
 
     public LatLng getSwitchOnLocationByDateAndTime(int dayOfWeek, String hourOfDay, Context context) throws ParseException
     {
+
         Log.i("SwitchOnLocationDateTime", dayOfWeek + " - " + hourOfDay);
+
         MyDbHelper dbHelper = new MyDbHelper(context);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
@@ -431,7 +432,6 @@ public class Dal_time
             String lng = c.getString(c.getColumnIndex("Longitude"));
 
             latLng = new LatLng(Double.parseDouble(lat), Double.parseDouble(lng));
-            Log.i("LAT - LONGGG", latLng.toString());
         }
 
         db.close();

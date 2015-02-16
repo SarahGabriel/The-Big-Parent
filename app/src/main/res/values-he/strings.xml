@@ -45,4 +45,10 @@
     <string name="action_delete_marker">Delete Marker</string>
     <string name="tracker_time">The current trackering time is:</string>
     <string name="no_tracker_time">You have no tracking time for this hour of the day!</string>
+    <string name="edit_radius">Edit radius</string>
+    <string name="Save" />
+    <string name="save">Save</string>
+    <string name="action_home">Home</string>
+    <string name="action_map">Map</string>
+
 </resources>
