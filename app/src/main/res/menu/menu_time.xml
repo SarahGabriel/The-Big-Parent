@@ -12,6 +12,17 @@
 
         android:onClick="onClick_menu_add_time"/>
 
+    <item android:id="@+id/action_home"
+        android:icon="@drawable/ic_action_home"
+        android:title="@string/action_home"
+        app:showAsAction="always"
+        android:onClick="onClick_menu_home"/>
+
+    <item android:id="@+id/action_map"
+        android:icon="@drawable/ic_action_map"
+        android:title="@string/action_map"
+        app:showAsAction="always"
+        android:onClick="onClick_menu_map"/>
 
     <item
         android:id="@+id/action_deleteAll_times"

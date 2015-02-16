@@ -29,4 +29,9 @@
     <string name="location_id">ID:</string>
     <string name="action_deleteAll_times">Delete all times</string>
     <string name="action_delete_marker">Delete Marker</string>
+    <string name="edit_radius">Edit radius</string>
+    <string name="Save" />
+    <string name="save">Save</string>
+    <string name="action_home">Home</string>
+    <string name="action_map">Map</string>
 </resources>
