@@ -18,24 +18,29 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RemoteViews;
+import android.widget.TextView;
 
 import com.thebigparent.sg.thebigparent.BL.Bl_app;
+import com.thebigparent.sg.thebigparent.Classes.Time;
 import com.thebigparent.sg.thebigparent.Dal.Dal_location;
 import com.thebigparent.sg.thebigparent.Dal.Dal_time;
 import com.thebigparent.sg.thebigparent.R;
 import com.thebigparent.sg.thebigparent.Services.GpsService;
 import com.thebigparent.sg.thebigparent.Widget.WorkingStatusAppWidget;
 
+import java.util.Calendar;
 import java.util.List;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity
+{
 
     private Intent i;
     private Dal_time dal_time;
     private Dal_location dal_location;
 
     private Button allMarkerButton, allTrackingButton;
+    private TextView trackingTime_textView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -48,6 +53,7 @@ public class MainActivity extends Activity {
 
         allTrackingButton = (Button)findViewById(R.id.all_tracking_time);
         allMarkerButton = (Button)findViewById(R.id.all_marker);
+        trackingTime_textView = (TextView)findViewById(R.id.tracker_time);
 
         List<String> trackingList = dal_time.getAllTime(this);
         List<String> markersList = dal_location.getAllMarkers(this);
@@ -56,6 +62,24 @@ public class MainActivity extends Activity {
         {
             //allTrackingButton.setClickable(false);
             allTrackingButton.setEnabled(false);
+        }
+        else
+        {
+
+            Calendar now = Calendar.getInstance();
+
+            int dayOfWeek = now.get(Calendar.DAY_OF_WEEK);
+            int hour = now.get(Calendar.HOUR_OF_DAY);
+            int minute = now.get(Calendar.MINUTE);
+            String hourOfDay = String.format("%02d", hour) + ":" + String.format("%02d", minute);
+            Log.w("Tracking HOUR", hourOfDay);
+
+            Time trackingTime = dal_time.getCurrentTime(dayOfWeek, hourOfDay, this);
+            if(trackingTime != null)
+            {
+                trackingTime_textView.setText(trackingTime.getHourStart() + " - " + trackingTime.getHourEnd());
+
+            }
         }
 
         if(markersList.size() == 0)
@@ -166,6 +190,8 @@ public class MainActivity extends Activity {
 
         Bl_app.makeSound(this, R.raw.app_interactive_alert_tone_off);
 
+        Bl_app.clearSmsPrefs(this);
+
         i = new Intent(this, GpsService.class);
         stopService(i);
 
@@ -248,20 +274,6 @@ public class MainActivity extends Activity {
         alertDialog.show();
     }
 
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-
-
-        Log.w("MainActivity",Long.toString(event.getEventTime()));
-        if(event.getAction() == MotionEvent.ACTION_DOWN)
-        {
-
-        }
-
-
-        return super.onTouchEvent(event);
-    }
 
     public void onClick_allTrackingTime(View view)
     {

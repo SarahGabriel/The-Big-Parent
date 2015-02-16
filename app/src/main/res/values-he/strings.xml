@@ -43,4 +43,6 @@
     <string name="location_id">ID:</string>
     <string name="action_deleteAll_times">Delete all times</string>
     <string name="action_delete_marker">Delete Marker</string>
+    <string name="tracker_time">The current trackering time is:</string>
+    <string name="no_tracker_time">You have no tracking time for this hour of the day!</string>
 </resources>

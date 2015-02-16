@@ -1,3 +1,7 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ScrollView01"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -54,7 +58,8 @@
             android:layout_width="@dimen/abc_config_prefDialogWidth"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_gravity="center">
+            android:layout_gravity="center"
+            android:paddingBottom="@dimen/abc_action_bar_default_height_material">
 
 
             <LinearLayout
@@ -98,7 +103,29 @@
                 />
         </LinearLayout>
 
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center">
+
+        <TextView
+            style="@style/Base.TextAppearance.AppCompat.Inverse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tracker_time"
+            />
+        <TextView
+            style="@style/Base.TextAppearance.AppCompat.Inverse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tracker_time"
+            android:text="@string/no_tracker_time"
+            />
     </LinearLayout>
 
-
 </LinearLayout>
+</ScrollView>

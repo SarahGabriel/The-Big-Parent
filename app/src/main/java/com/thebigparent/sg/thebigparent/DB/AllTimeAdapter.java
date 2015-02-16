@@ -10,6 +10,7 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.thebigparent.sg.thebigparent.BL.Bl_app;
 import com.thebigparent.sg.thebigparent.Classes.MapLocation;
 import com.thebigparent.sg.thebigparent.Dal.Dal_location;
 import com.thebigparent.sg.thebigparent.Dal.Dal_time;
@@ -139,6 +140,14 @@ public class AllTimeAdapter extends ArrayAdapter<String> implements CompoundButt
         String day = day_textView.getText().toString().trim();
         String hour_start = parser[0].trim();
         String hour_end = parser[1].trim();
+
+
+        if(isChecked)      // if turn off clear sms prefs
+        {
+            Bl_app.clearSmsPrefsIfSwitchOff(location_lat, location_lng, getContext());
+        }
+
+
 
         Log.i("ON CHECK", location_name);
         Log.i("ON CHECK latitude", location_lat);

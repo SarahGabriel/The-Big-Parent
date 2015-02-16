@@ -243,6 +243,44 @@ public class Dal_time
         return allHours;
     }
 
+    public Time getCurrentTime(int dayOfWeek, String hourOfDay, Context context)
+    {
+        MyDbHelper dbHelper = new MyDbHelper(context);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        Time time = null;
+        String[] cols={Constants_time.COLUMN_NAME_HOUR_START,
+                Constants_time.COLUMN_NAME_HOUR_END,
+                Constants_time.COLUMN_NAME_LATITUDE,
+                Constants_time.COLUMN_NAME_LONGITUDE,
+                Constants_time.COLUMN_NAME_NO_REPEAT,
+                Constants_time.COLUMN_NAME_SWITCHER};
+
+
+
+        String selectQuery = "SELECT * FROM " + Constants_time.TABLE_NAME +
+                " WHERE " + Constants_time.COLUMN_NAME_DAY + " = ? AND HourStart <= ? AND HourEnd >= ?";
+        Cursor c = db.rawQuery(selectQuery, new String[] { String.valueOf(dayOfWeek), hourOfDay.toString(), hourOfDay.toString() });
+        if(c.getCount() == 0)
+        {
+            db.close();
+            return null;
+        }
+        if (c.moveToFirst())
+        {
+            String lat = c.getString(c.getColumnIndex("Latitude"));
+            String lng = c.getString(c.getColumnIndex("Longitude"));
+            String hour_start = c.getString(c.getColumnIndex("HourStart"));
+            String hour_end = c.getString(c.getColumnIndex("HourEnd"));
+            int noRepeat = Integer.parseInt(c.getString(c.getColumnIndex("NoRepeat")));
+            int switcher = Integer.parseInt(c.getString(c.getColumnIndex("Switcher")));
+
+            time = new Time(dayOfWeek, hour_start, hour_end, lat, lng, noRepeat, switcher);
+        }
+
+        db.close();
+        return time;
+    }
     public List<String> getAllHoursAndDayByLatLng(String latitude, String longitude, Context context)
     {
         List<String> allHoursAndDays = new ArrayList<String>();
@@ -371,7 +409,7 @@ public class Dal_time
 
     public LatLng getSwitchOnLocationByDateAndTime(int dayOfWeek, String hourOfDay, Context context) throws ParseException
     {
-        Log.i("getSwitchOnLocationByDateAndTime", dayOfWeek + " - " + hourOfDay);
+        Log.i("SwitchOnLocationDateTime", dayOfWeek + " - " + hourOfDay);
         MyDbHelper dbHelper = new MyDbHelper(context);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");

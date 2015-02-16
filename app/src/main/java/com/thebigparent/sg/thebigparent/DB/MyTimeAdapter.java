@@ -10,6 +10,8 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.thebigparent.sg.thebigparent.BL.Bl_app;
+import com.thebigparent.sg.thebigparent.Classes.Time;
 import com.thebigparent.sg.thebigparent.Dal.Dal_time;
 import com.thebigparent.sg.thebigparent.R;
 
@@ -107,7 +109,19 @@ public class MyTimeAdapter extends ArrayAdapter<String> implements CompoundButto
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
     {
 
+        if(isChecked)
+        {
+            Log.w("isChecked" , "true");
+        }
+        else
+        {
+            Log.w("isChecked" , "false");
+        }
 
+        if(isChecked)  // if turn off clear sms prefs
+        {
+            Bl_app.clearSmsPrefsIfSwitchOff(latitude, longitude, getContext());
+        }
 
         View viewParentRoot = buttonView.getRootView();
         TextView location_name_textView = (TextView)viewParentRoot.findViewById(R.id.location);

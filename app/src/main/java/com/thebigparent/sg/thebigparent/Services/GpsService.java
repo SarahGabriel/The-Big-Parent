@@ -5,6 +5,7 @@ import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -17,65 +18,110 @@ import android.widget.RemoteViews;
 import com.google.android.gms.maps.model.LatLng;
 import com.thebigparent.sg.thebigparent.BL.Bl_app;
 import com.thebigparent.sg.thebigparent.Classes.MapLocation;
+import com.thebigparent.sg.thebigparent.Classes.Time;
 import com.thebigparent.sg.thebigparent.Dal.Dal_location;
 import com.thebigparent.sg.thebigparent.Dal.Dal_time;
 import com.thebigparent.sg.thebigparent.R;
 import com.thebigparent.sg.thebigparent.Widget.WorkingStatusAppWidget;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class GpsService extends Service {
 
     final long MIN_TIME_FOR_UPDATE = 0;   // 300000 = 5 minutes
     final long MIN_DIS_FOR_UPDATE = 1;
+    private final String TIME = "time";
+    private final String EMPTY = "empty";
+    private final String END_TIME = "endTime";
+    private final String DAY = "empty";
+
     LocationManager locationManager;
 
     LocationListener locationListener = new LocationListener()
     {
-        public void onLocationChanged(Location realLocation)
+        public void onLocationChanged(Location realLocation) // Called when a new location is found by the network location provider.
         {
-            // Called when a new location is found by the network location provider.
-            //makeUseOfNewLocation(location);
-
 
             Dal_time dal_time = new Dal_time();
-            String radius;
             Dal_location dal_location = new Dal_location();
-            LatLng latLngSupposedToBeIn = null;
-            MapLocation locationSupposedToBeIn;
+
+            String radius;
+
+            LatLng markerLocationLatLng = null;
+            MapLocation markerLocation;
+
             Calendar now = Calendar.getInstance();
+
             int dayOfWeek = now.get(Calendar.DAY_OF_WEEK);
             int hour = now.get(Calendar.HOUR_OF_DAY);
             int minute = now.get(Calendar.MINUTE);
+
             String hourOfDay = String.format("%02d", hour) + ":" + String.format("%02d", minute);
+
+
+            SharedPreferences settings = getSharedPreferences("MyPrefsFile", MODE_PRIVATE);
+            SharedPreferences.Editor editor;
+
+            ifSmsSentClearPrefs(dayOfWeek, hourOfDay); // check if sent sms is still valid
+
+            String lastSmsTime = settings.getString(TIME, EMPTY);
+
+            if(!lastSmsTime.equals(EMPTY))  // if sms still valid return
+            {
+                return;
+            }
+
+
             try
             {
-                latLngSupposedToBeIn = dal_time.getSwitchOnLocationByDateAndTime(dayOfWeek, hourOfDay, getApplicationContext());
+                markerLocationLatLng = dal_time.getSwitchOnLocationByDateAndTime(dayOfWeek, hourOfDay, getApplicationContext());
 
             }
             catch (ParseException e)
             {
                 e.printStackTrace();
             }
-            if(latLngSupposedToBeIn != null)
+
+
+
+            if(markerLocationLatLng != null)
             {
-                locationSupposedToBeIn = dal_location.getLocation(String.valueOf(latLngSupposedToBeIn.latitude), String.valueOf(latLngSupposedToBeIn.longitude), getApplicationContext());
-                radius = locationSupposedToBeIn.getRadius();
+                Time trackingTime = dal_time.getCurrentTime(dayOfWeek, hourOfDay, getApplicationContext());
+                markerLocation = dal_location.getLocation(String.valueOf(markerLocationLatLng.latitude), String.valueOf(markerLocationLatLng.longitude), getApplicationContext());
+                radius = markerLocation.getRadius();
 
-                Location locationSupposedToBe = new Location("School point");
+                Location copyOfMarkerLocation = new Location("Copy");
 
-                locationSupposedToBe.setLatitude(latLngSupposedToBeIn.latitude);
-                locationSupposedToBe.setLongitude(latLngSupposedToBeIn.longitude);
+                copyOfMarkerLocation.setLatitude(markerLocationLatLng.latitude);
+                copyOfMarkerLocation.setLongitude(markerLocationLatLng.longitude);
 
-                float distance = locationSupposedToBe.distanceTo(realLocation);
+                float distance = copyOfMarkerLocation.distanceTo(realLocation);
+
                 if(distance > Float.valueOf(radius))
                 {
                     Bl_app.makeSound(getApplicationContext(), R.raw.cat);
                     SmsManager sms = SmsManager.getDefault();
+
+                    //todo: get contact phone number and add logical message
                     sms.sendTextMessage("0525234316", null, "Liora n'est pas a l'ecole!!!!", null, null);
+
+
+                    // Save the send sms time
+
+                    String endTime = trackingTime.getHourEnd();
+
+                    editor = settings.edit();
+                    editor.putString(TIME, hourOfDay);
+                    editor.putString(END_TIME, endTime);
+                    editor.putInt(DAY , dayOfWeek);
+                    editor.commit();
+
                 }
             }
+
             // print on the log screen
             Log.v("MyGPS", "Longitude: " + Double.toString(realLocation.getLongitude()) + ", Latitude: " + Double.toString(realLocation.getLatitude()));
         }
@@ -135,6 +181,7 @@ public class GpsService extends Service {
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_FOR_UPDATE, MIN_DIS_FOR_UPDATE, locationListener);
 
+
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -154,6 +201,55 @@ public class GpsService extends Service {
         sms.sendTextMessage(phoneNumber, null, message, null, null);
     }
 
+    public void ifSmsSentClearPrefs(int dayOfWeek , String hourOfDay)
+    {
+        // Check if sms was sent
+        SharedPreferences settings = getSharedPreferences("MyPrefsFile", MODE_PRIVATE);
+        SharedPreferences.Editor editor;
+        String lastSmsTime = settings.getString(TIME, EMPTY);
+        int lastSmsDay = settings.getInt(DAY, 0);
 
 
+        if(!lastSmsTime.equals(EMPTY))
+        {
+            if(dayOfWeek != lastSmsDay)
+            {
+                editor = settings.edit();
+                editor.putString(TIME, EMPTY);
+                editor.putString(END_TIME, "");
+                editor.putInt(DAY , 0);
+                editor.commit();
+
+            }
+            else
+            {
+                String endTime = settings.getString(END_TIME, "");
+
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+
+                Date endTimeDate = null;
+                Date hourOfDayDate = null;
+                try {
+                    endTimeDate = sdf.parse(endTime);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    hourOfDayDate = sdf.parse(hourOfDay);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+
+                if(hourOfDayDate.after(endTimeDate))
+                {
+                    editor = settings.edit();
+                    editor.putString(TIME, EMPTY);
+                    editor.putString(END_TIME, "");
+                    editor.putInt(DAY , 0);
+                    editor.commit();
+                }
+            }
+        }
+    }
 }
