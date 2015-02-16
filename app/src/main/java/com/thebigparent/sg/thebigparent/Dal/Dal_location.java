@@ -11,6 +11,7 @@ import com.thebigparent.sg.thebigparent.Classes.MapLocation;
 import com.thebigparent.sg.thebigparent.DB.Constants_location;
 import com.thebigparent.sg.thebigparent.DB.MyDbHelper;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,10 +20,13 @@ import java.util.List;
  */
 public class Dal_location
 {
+    Dal_time dal_time;
     public Dal_location()
     {
+        dal_time = new Dal_time();
     }
 
+//    Add Location
     public void addNewLocation(MapLocation location, Context context)
     {
         MyDbHelper dbHelper = new MyDbHelper(context);
@@ -39,6 +43,7 @@ public class Dal_location
         db.close();
     }
 
+//    Return list of latLng of all location
     public List<LatLng> getAllLocationsMarker(Context context)
     {
         List<LatLng> allLocations = new ArrayList<LatLng>();
@@ -109,6 +114,7 @@ public class Dal_location
         return allLocations;
     }
 
+//    Get location details using lat-lng
     public MapLocation getLocation(String latitude, String longitude, Context context)
     {
         MapLocation location;
@@ -128,6 +134,7 @@ public class Dal_location
         if (!(c.moveToFirst()) || c.getCount() == 0)
         {
             //cursor is empty
+            db1.close();
             return null;
         }
         String lat = c.getString((0)).trim();
@@ -137,15 +144,85 @@ public class Dal_location
         String radius = c.getString((4)).trim();
 
         location = new MapLocation(locationName, lng, lat, radius, contact);
-
+        db1.close();
         return location;
     }
 
-    public void deleteLocation(String latitude, String longitude, Context context)
+//    Return all Markers in DB
+    public List<String> getAllMarkers(Context context)
+    {
+        List<String> allMarkers = new ArrayList<String>();
+        MyDbHelper dbHelper = new MyDbHelper(context);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+//        The columns to return
+        String[] cols={Constants_location._ID,
+                Constants_location.COLUMN_NAME_LATITUDE,
+                Constants_location.COLUMN_NAME_LONGITUDE,
+                Constants_location.COLUMN_NAME_LOCATION_NAME,
+                Constants_location.COLUMN_NAME_CONTACT};
+
+
+//      SQL query
+        Cursor c = db.query(
+                Constants_location.TABLE_NAME,    // The table to query
+                cols,                    // The columns to return
+                null,
+                null,
+                null,                    // don't group the rows
+                null,                    // don't filter by row groups
+                Constants_location.COLUMN_NAME_LOCATION_NAME + " ASC"    // The sort order
+        );
+
+        while (c.moveToNext())
+        {
+            String id_marker = c.getString(0).trim();
+            String latitude = c.getString(1).trim();
+            String longitude = c.getString(2).trim();
+            String location = c.getString(3).trim();
+            String contact = c.getString(4).trim();
+            String marker = id_marker + "," + latitude + "," + longitude + "," + location + "," + contact;
+            allMarkers.add(marker);
+        }
+
+        Log.w("allMarkers", allMarkers.toString());
+
+        db.close();
+
+        return allMarkers;
+    }
+
+    public void updateRadius(String latitude, String longitude, String newRadius, Context context)
+    {
+        MyDbHelper dbHelper = new MyDbHelper(context);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        String[] cols={Constants_location.COLUMN_NAME_LATITUDE,
+                Constants_location.COLUMN_NAME_LONGITUDE};
+
+        ContentValues values = new ContentValues();
+        values.put(Constants_location.COLUMN_NAME_RADIUS, newRadius);
+
+        int cursor = db.update(Constants_location.TABLE_NAME, values, Constants_location.COLUMN_NAME_LATITUDE + " = ? AND " +
+                        Constants_location.COLUMN_NAME_LONGITUDE + " =?",
+                new String[]{latitude, longitude});
+        Log.i("changeRadius - cursor", String.valueOf(cursor));
+
+        db.close();
+    }
+
+//    Delete location using lat-lng
+    public void deleteLocation(String latitude, String longitude, Context context) throws SQLException
     {
         MyDbHelper dbHelper = new MyDbHelper(context);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
+//        Delete all tracking times of location if there is
+        if(dal_time.getAllTimeByLatLng(latitude, longitude, context).size() != 0)
+        {
+            dal_time.deleteAllTimes(latitude, longitude, context);
+        }
+//        Delete location
         db.delete(Constants_location.TABLE_NAME, Constants_location.COLUMN_NAME_LATITUDE + " = ? AND " + Constants_location.COLUMN_NAME_LONGITUDE + " = ?",
                 new String[] { latitude, longitude});
         db.close();

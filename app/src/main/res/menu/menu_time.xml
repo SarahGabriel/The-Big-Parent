@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.thebigparent.sg.thebigparent.Activities.TimeActivity">
+
+    <!-- Search, should appear as action button -->
+    <item android:id="@+id/action_add_time"
+        android:icon="@drawable/ic_action_add_time2"
+        android:title="@string/action_add_time"
+        app:showAsAction="always"
+
+        android:onClick="onClick_menu_add_time"/>
+
+
+    <item
+        android:id="@+id/action_deleteAll_times"
+        android:title="@string/action_deleteAll_times"
+        android:orderInCategory="100"
+        android:onClick="onClick_menu_delete_all_times"
+        app:showAsAction="never" />
+</menu>

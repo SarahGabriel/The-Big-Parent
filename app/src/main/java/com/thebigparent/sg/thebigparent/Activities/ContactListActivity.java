@@ -1,11 +1,11 @@
 package com.thebigparent.sg.thebigparent.Activities;
 
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,14 +15,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.thebigparent.sg.thebigparent.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContactListActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
+public class ContactListActivity extends Activity implements AdapterView.OnItemClickListener {
 
     private List<String> contacts;
     private ListView listView;
@@ -68,7 +67,7 @@ public class ContactListActivity extends ActionBarActivity implements AdapterVie
                         contacts.add(name);
                         String phoneNo = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                         //String mail = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Email));
-                        Toast.makeText(ContactListActivity.this, "Name: " + name + ", Phone No: " + phoneNo, Toast.LENGTH_SHORT).show();
+                     //   Toast.makeText(ContactListActivity.this, "Name: " + name + ", Phone No: " + phoneNo, Toast.LENGTH_SHORT).show();
                     }
                     pCur.close();
                 }

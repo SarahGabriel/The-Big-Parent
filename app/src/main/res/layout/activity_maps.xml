@@ -1,9 +1,67 @@
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/map"
     tools:context="com.thebigparent.sg.thebigparent.Activities.MapsActivity"
     android:name="com.google.android.gms.maps.SupportMapFragment"
+        />
 
-    />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="bottom"
+
+        >
+        <TextView
+            android:id="@+id/radiusText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/holo_red_light"
+            android:text="@string/radius"
+            android:layout_margin="5dp"
+            android:visibility="invisible"
+            />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+
+            <Button
+                android:id="@+id/plus"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:visibility="invisible"
+                android:onClick="plusOnclick"
+                android:background="@drawable/plus"
+                android:layout_margin="5dp"
+
+                />
+
+            <Button
+                android:id="@+id/minus"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:visibility="invisible"
+                android:onClick="minusOnclick"
+                android:background="@drawable/minus"
+                android:layout_margin="5dp"
+
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>
