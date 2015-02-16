@@ -7,12 +7,9 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
-
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -35,6 +32,7 @@ import java.util.List;
 public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLongClickListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener, GoogleMap.InfoWindowAdapter , GoogleMap.OnMapClickListener
 {
 
+    private Marker clickedMarker;
     private static Circle markerCircle;     // The radius circle of the clicked marker
 
     Button plus,minus;          // For the radius size
@@ -146,7 +144,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLon
 
 //           "\u200e" -- in order to support hebrew language in the marker
            mMap.addMarker(new MarkerOptions().position(latLng).title("\u200e"+location.getLocationName()).snippet("\u200e"+location.getContact().toString()));      // Add the marker
-           c = mMap.addCircle(new CircleOptions().center(latLng).radius(Integer.parseInt(location.getRadius().toString())));                                        // Add the radius
+           c = mMap.addCircle(new CircleOptions().center(latLng).radius(Math.round(Float.valueOf(location.getRadius().toString()))));                                      // Add the radius
 
            circlesRadius.add(c);        // Add the radius to the radii list
        }
@@ -178,6 +176,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLon
         {
             markerCircle.setStrokeColor(Color.BLACK);
         }
+
+        clickedMarker = marker;
 
         LatLng latLng = marker.getPosition();       // Get marker position
 
@@ -264,6 +264,10 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLon
         //markerCircle.remove();
         markerCircle.setRadius(markerCircle.getRadius() * 1.2);
         radiusText.setText("Radius: " + (int)markerCircle.getRadius() + " m");
+
+        String latitude = String.valueOf(clickedMarker.getPosition().latitude);
+        String longitude = String.valueOf(clickedMarker.getPosition().longitude);
+        dal_location.updateRadius(latitude, longitude, String.valueOf(markerCircle.getRadius()), this);
         //todo: add radius to db
 
     }
@@ -271,6 +275,9 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLon
     public void minusOnclick(View view) {           // Decrease radius
         markerCircle.setRadius(markerCircle.getRadius()*0.8);
         radiusText.setText("Radius: " + (int)markerCircle.getRadius()+ " m");
+        String latitude = String.valueOf(clickedMarker.getPosition().latitude);
+        String longitude = String.valueOf(clickedMarker.getPosition().longitude);
+        dal_location.updateRadius(latitude, longitude, String.valueOf(markerCircle.getRadius()), this);
         //todo: add radius to db
     }
 

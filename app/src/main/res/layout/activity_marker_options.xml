@@ -14,6 +14,7 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:id="@+id/main_layout_marker_options"
     android:orientation="vertical"
+    android:background="@drawable/backgrounds"
     tools:context="com.thebigparent.sg.thebigparent.Activities.MarkerOptionsActivity">
 
     <!-- Name -->
@@ -23,43 +24,21 @@
         android:layout_gravity="center"
         android:layout_marginBottom="@dimen/abc_action_bar_default_height_material">
 
-
-    <TextView
-            style="@style/Base.TextAppearance.AppCompat.Display1"
-            android:id="@+id/location_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+        <TextView
+                style="@style/Base.TextAppearance.AppCompat.Display1"
+                android:id="@+id/location_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
     </LinearLayout>
 
     <!-- Fields -->
     <LinearLayout
+        style="@style/Base.TextAppearance.AppCompat.Inverse"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_marginBottom="@dimen/abc_action_bar_default_height_material">
-
-
-        <!-- Address -->
-        <!--<LinearLayout-->
-            <!--android:layout_width="fill_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:orientation="horizontal">-->
-
-            <!--<TextView-->
-                <!--style="@style/Base.TextAppearance.AppCompat.Title"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:text="@string/address"-->
-                <!--android:layout_marginRight="@dimen/activity_horizontal_margin"/>-->
-
-            <!--<TextView-->
-                <!--style="@style/Base.TextAppearance.AppCompat.Body1"-->
-                <!--android:id="@+id/address_field"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content" />-->
-
-        <!--</LinearLayout>-->
 
         <!-- Location Name -->
         <LinearLayout
@@ -68,14 +47,14 @@
             android:orientation="horizontal">
 
             <TextView
-                style="@style/Base.TextAppearance.AppCompat.Title"
+                style="@style/Base.TextAppearance.AppCompat.Title.Inverse"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/contact_name"
                 android:layout_marginRight="@dimen/activity_horizontal_margin"/>
 
             <TextView
-                style="@style/Base.TextAppearance.AppCompat.Body2"
+                style="@style/Base.TextAppearance.AppCompat.Inverse"
                 android:id="@+id/contact_name_field"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
@@ -90,21 +69,21 @@
             android:layout_marginBottom="@dimen/abc_action_bar_default_height_material">
 
             <TextView
-                style="@style/Base.TextAppearance.AppCompat.Title"
+                style="@style/Base.TextAppearance.AppCompat.Title.Inverse"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/radius"
                 android:layout_marginRight="@dimen/activity_horizontal_margin"/>
 
             <TextView
-                style="@style/Base.TextAppearance.AppCompat.Body2"
+                style="@style/Base.TextAppearance.AppCompat.Inverse"
                 android:id="@+id/radius_field"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 />
 
             <TextView
-                style="@style/Base.TextAppearance.AppCompat.Body2"
+                style="@style/Base.TextAppearance.AppCompat.Inverse"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/meters"
@@ -120,49 +99,32 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_gravity="center">
+        android:layout_gravity="center"
+        >
 
-        <!--<Switch-->
-            <!--style="@style/Base.TextAppearance.AppCompat.Title"-->
-            <!--android:id="@+id/mySwitch"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-
-            <!--android:layout_marginTop="20dp"-->
-            <!--android:text="Play with the Switch"-->
-            <!--android:layout_marginBottom="@dimen/abc_action_bar_default_height_material"-->
-            <!--android:layout_gravity="center"/>-->
-
-        <LinearLayout
+             <!--Tracking Time -->
+        <Button
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:layout_marginBottom="@dimen/abc_action_bar_default_height_material">
+            android:text="@string/tracking_time"
+            android:onClick="onClick_tracking_time"
 
-            <!--Tracking Time -->
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/tracking_time"
-                android:onClick="onClick_tracking_time"
-                android:layout_marginRight="@dimen/abc_action_button_min_width_material"
-                android:background="@color/material_deep_teal_200"/>
+            />
 
-            <!-- Add Tracking Time -->
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/add_tracking_time"
-                android:onClick="onClick_add_tracking_time"
-                android:background="@color/wallet_holo_blue_light"/>
-
-        </LinearLayout>
+        <!-- Add Tracking Time -->
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/add_tracking_time"
+            android:onClick="onClick_add_tracking_time"
+           />
+<!-- android:background="@color/wallet_holo_blue_light"-->
         <!--Delete Location-->
         <Button
             android:id="@+id/delete_location_button"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/abc_action_bar_default_height_material"
             android:text="@string/delete_location"
             android:onClick="onClick_delete_location"
             android:background="@color/common_signin_btn_default_background"

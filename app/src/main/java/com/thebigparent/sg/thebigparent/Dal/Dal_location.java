@@ -192,6 +192,25 @@ public class Dal_location
         return allMarkers;
     }
 
+    public void updateRadius(String latitude, String longitude, String newRadius, Context context)
+    {
+        MyDbHelper dbHelper = new MyDbHelper(context);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        String[] cols={Constants_location.COLUMN_NAME_LATITUDE,
+                Constants_location.COLUMN_NAME_LONGITUDE};
+
+        ContentValues values = new ContentValues();
+        values.put(Constants_location.COLUMN_NAME_RADIUS, newRadius);
+
+        int cursor = db.update(Constants_location.TABLE_NAME, values, Constants_location.COLUMN_NAME_LATITUDE + " = ? AND " +
+                        Constants_location.COLUMN_NAME_LONGITUDE + " =?",
+                new String[]{latitude, longitude});
+        Log.i("changeRadius - cursor", String.valueOf(cursor));
+
+        db.close();
+    }
+
 //    Delete location using lat-lng
     public void deleteLocation(String latitude, String longitude, Context context) throws SQLException
     {
