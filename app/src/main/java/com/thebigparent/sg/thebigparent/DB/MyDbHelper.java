@@ -37,6 +37,7 @@ public class MyDbHelper extends SQLiteOpenHelper {            //Helper to create
                 Constants_time.COLUMN_NAME_HOUR_END + " TEXT_TYPE, " +
                 Constants_time.COLUMN_NAME_LONGITUDE + " TEXT_TYPE, " +
                 Constants_time.COLUMN_NAME_LATITUDE + " TEXT_TYPE, " +
+                Constants_time.COLUMN_NAME_DATE + " TEXT_TYPE, " +
                 Constants_time.COLUMN_NAME_NO_REPEAT + " INTEGER, " +
                 Constants_time.COLUMN_NAME_SWITCHER + " INTEGER);" );
     }

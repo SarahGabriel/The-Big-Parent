@@ -203,7 +203,8 @@ public class Dal_location
         ContentValues values = new ContentValues();
         values.put(Constants_location.COLUMN_NAME_RADIUS, newRadius);
 
-        int cursor = db.update(Constants_location.TABLE_NAME, values, Constants_location.COLUMN_NAME_LATITUDE + " = ? AND " +
+        int cursor = db.update(Constants_location.TABLE_NAME, values,
+                        Constants_location.COLUMN_NAME_LATITUDE + " = ? AND " +
                         Constants_location.COLUMN_NAME_LONGITUDE + " =?",
                 new String[]{latitude, longitude});
         Log.i("changeRadius - cursor", String.valueOf(cursor));
