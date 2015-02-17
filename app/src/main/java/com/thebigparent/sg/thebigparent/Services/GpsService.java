@@ -14,6 +14,7 @@ import android.os.IBinder;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.thebigparent.sg.thebigparent.BL.Bl_app;
@@ -79,6 +80,14 @@ public class GpsService extends Service {
             {
                 markerLocationLatLng = dal_time.getSwitchOnLocationByDateAndTime(dayOfWeek, hourOfDay, getApplicationContext());
 
+                if(markerLocationLatLng != null)
+                {
+                    Toast.makeText(getApplicationContext(), markerLocationLatLng.toString(), Toast.LENGTH_LONG).show();
+                }
+                else
+                {
+                    Toast.makeText(getApplicationContext(), "markerLocationLatLng NULL", Toast.LENGTH_LONG).show();
+                }
             }
             catch (ParseException e)
             {
