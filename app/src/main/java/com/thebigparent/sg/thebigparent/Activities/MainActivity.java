@@ -14,7 +14,6 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RemoteViews;
@@ -55,7 +54,9 @@ public class MainActivity extends Activity
         allMarkerButton = (Button)findViewById(R.id.all_marker);
         trackingTime_textView = (TextView)findViewById(R.id.tracker_time);
 
+
         List<String> trackingList = dal_time.getAllTime(this);
+
         List<String> markersList = dal_location.getAllMarkers(this);
 
         if(trackingList.size() == 0)
@@ -74,7 +75,7 @@ public class MainActivity extends Activity
             String hourOfDay = String.format("%02d", hour) + ":" + String.format("%02d", minute);
             Log.w("Tracking HOUR", hourOfDay);
 
-            Time trackingTime = dal_time.getCurrentTime(dayOfWeek, hourOfDay, this);
+            Time trackingTime = dal_time.getCurrentTimeSwitchOn(dayOfWeek, hourOfDay, this);
             if(trackingTime != null)
             {
                 trackingTime_textView.setText(trackingTime.getHourStart() + " - " + trackingTime.getHourEnd());
@@ -103,6 +104,21 @@ public class MainActivity extends Activity
         else
         {
             allTrackingButton.setEnabled(true);
+            Calendar now = Calendar.getInstance();
+
+            int dayOfWeek = now.get(Calendar.DAY_OF_WEEK);
+            int hour = now.get(Calendar.HOUR_OF_DAY);
+            int minute = now.get(Calendar.MINUTE);
+            String hourOfDay = String.format("%02d", hour) + ":" + String.format("%02d", minute);
+            Time trackingTime = dal_time.getCurrentTimeSwitchOn(dayOfWeek, hourOfDay, this);
+            if(trackingTime != null)
+            {
+                trackingTime_textView.setText(trackingTime.getHourStart() + " - " + trackingTime.getHourEnd());
+            }
+            else
+            {
+                trackingTime_textView.setText(this.getResources().getString(R.string.no_tracker_time));
+            }
         }
 
         if(markersList.size() == 0)
@@ -113,6 +129,8 @@ public class MainActivity extends Activity
         {
             allMarkerButton.setEnabled(true);
         }
+
+
     }
 
 
@@ -151,7 +169,7 @@ public class MainActivity extends Activity
 
 
         Bl_app.makeSound(this, R.raw.app_interactive_alert_tone_on);
-
+        Bl_app.clearSmsPrefs(this);
         if(!canGetLocation(this))
         {
             Bl_app.makeSound(this, R.raw.multimedia_pop_up_alert_tone_1);
@@ -186,11 +204,12 @@ public class MainActivity extends Activity
     }
 
 
-    public void onClick_stopGps(View view) {
+    public void onClick_stopGps(View view)
+    {
 
         Bl_app.makeSound(this, R.raw.app_interactive_alert_tone_off);
 
-        Bl_app.clearSmsPrefs(this);
+
 
         i = new Intent(this, GpsService.class);
         stopService(i);

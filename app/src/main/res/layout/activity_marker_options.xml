@@ -108,7 +108,7 @@
             android:layout_height="wrap_content"
             android:text="@string/tracking_time"
             android:onClick="onClick_tracking_time"
-
+            android:id="@+id/all_tracking_time_button"
             />
 
         <!-- Add Tracking Time -->

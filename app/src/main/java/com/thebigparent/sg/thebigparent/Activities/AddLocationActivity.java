@@ -1,15 +1,18 @@
 package com.thebigparent.sg.thebigparent.Activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.thebigparent.sg.thebigparent.Classes.MapLocation;
 import com.thebigparent.sg.thebigparent.Dal.Dal_location;
@@ -22,7 +25,6 @@ public class AddLocationActivity extends Activity
     final static public int REQUEST_CODE = 109;
     private LinearLayout mainLinearLayout;
     private EditText locationName_editText, radius_editText;
-
     private String contactName;
     private Dal_location dal_location;
     private String latitude, longitude;
@@ -87,16 +89,17 @@ public class AddLocationActivity extends Activity
     {     // Called when Setting activity returns
         super.onActivityResult(requestCode, resultCode, data);
 
+        TextView contact = (TextView)findViewById(R.id.contact_name);
         if (requestCode == REQUEST_CODE)
         {
             if (resultCode == RESULT_OK)
             {
                 contactName = data.getStringExtra("name");
-                Log.w("onResult", contactName);
-                Log.w("onResultLongitude", longitude);
-                Log.w("onResultLatitude", latitude);
 
+
+                contact.setText(contactName);
                 backFromActivity = true;            // Flag returned from Settings activity
+
             }
         }
     }
@@ -105,13 +108,55 @@ public class AddLocationActivity extends Activity
     {
         MapLocation location;
 
-
-        if(backFromActivity)
+        if(radius_editText.getText().equals("") || locationName_editText.getText().equals("") || !backFromActivity)
+        {
+            new AlertDialog.Builder(this)
+                    .setTitle("Fields missing!")
+                    .setMessage("Please fill all the fields")
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            // continue with delete
+                            dialog.dismiss();
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // do nothing
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        }
+        else
         {
             location = new MapLocation(locationName_editText.getText().toString(), longitude, latitude, radius_editText.getText().toString(), contactName);
-            Log.w("Location",location.toString());
+            Log.w("Location", location.toString());
             dal_location.addNewLocation(location, this);
             this.finish();
         }
+    }
+
+
+    public void onClick_editRadius_button(View view)
+    {
+        Button edit_button = (Button)findViewById(R.id.edit_radius_button);
+        radius_editText = (EditText)findViewById(R.id.add_location_edit_text_radius);
+        if(edit_button.getText().equals(view.getContext().getResources().getString(R.string.edit_radius)))
+        {
+
+            radius_editText.setEnabled(true);
+            //editRadius.setText("");
+            edit_button.setText(view.getContext().getResources().getString(R.string.save));
+        }
+        else
+        {
+            radius_editText.setEnabled(false);
+            //editRadius.setText("100");
+            edit_button.setText(view.getContext().getResources().getString(R.string.edit_radius));
+           // dal_location.updateRadius(latitude, longitude, editRadius.getText().toString(), view.getContext());
+        }
+
+
     }
 }

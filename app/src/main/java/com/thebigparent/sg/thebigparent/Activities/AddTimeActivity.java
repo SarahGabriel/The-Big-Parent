@@ -19,11 +19,13 @@ import com.thebigparent.sg.thebigparent.Classes.Time;
 import com.thebigparent.sg.thebigparent.Dal.Dal_time;
 import com.thebigparent.sg.thebigparent.R;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 public class AddTimeActivity extends ActionBarActivity// implements CompoundButton.OnCheckedChangeListener
@@ -202,12 +204,17 @@ public class AddTimeActivity extends ActionBarActivity// implements CompoundButt
 
             if(isDateInOrder(date_start,  date_end))
             {
+                DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                Date today = new Date();        // day of today
+                String date = dateFormat.format(today);     // formatting date
+
+                Log.i("FORMAT DATE", date);
                 if(checkBox_noRepeat.isChecked())
                 {
-                    Calendar calendar = Calendar.getInstance();
+                    Calendar calendar = GregorianCalendar.getInstance();
                     day = calendar.get(Calendar.DAY_OF_WEEK);  // If current day is Sunday, day=1. Saturday, day=7.
 
-                    Time time = new Time(day, hour_start, hour_end, latitude, longitude, 1, 1);
+                    Time time = new Time(day, hour_start, hour_end, latitude, longitude, date ,1, 1);
                     Log.w("Time_noRepeat", time.toString());
                     if(dal_time.addNewTime(time, this))
                     {
@@ -219,57 +226,76 @@ public class AddTimeActivity extends ActionBarActivity// implements CompoundButt
                     List<Time> addRepeatTime = new ArrayList<Time>();
                     if(checkBox_sunday.isChecked())
                     {
-                        Time time = new Time(1, hour_start, hour_end, latitude, longitude, 0, 1);
+                        Time time = new Time(1, hour_start, hour_end, latitude, longitude, date, 0, 1);
                         Log.w("Time_sunday", time.toString());
                         addRepeatTime.add(time);
                     }
                     if(checkBox_monday.isChecked())
                     {
-                        Time time = new Time(2, hour_start, hour_end, latitude, longitude, 0, 1);
+                        Time time = new Time(2, hour_start, hour_end, latitude, longitude, date, 0, 1);
                         Log.w("Time_monday", time.toString());
                         addRepeatTime.add(time);
                     }
                     if(checkBox_tuesday.isChecked())
                     {
-                        Time time = new Time(3, hour_start, hour_end, latitude, longitude, 0, 1);
+                        Time time = new Time(3, hour_start, hour_end, latitude, longitude, date, 0, 1);
                         Log.w("Time_tuesday", time.toString());
                         addRepeatTime.add(time);
                     }
                     if(checkBox_wednesday.isChecked())
                     {
-                        Time time = new Time(4, hour_start, hour_end, latitude, longitude, 0, 1);
+                        Time time = new Time(4, hour_start, hour_end, latitude, longitude, date, 0, 1);
                         Log.w("Time_wednesday", time.toString());
                         addRepeatTime.add(time);
                     }
                     if(checkBox_thursday.isChecked())
                     {
-                        Time time = new Time(5, hour_start, hour_end, latitude, longitude, 0, 1);
+                        Time time = new Time(5, hour_start, hour_end, latitude, longitude, date, 0, 1);
                         Log.w("Time_thursday", time.toString());
                         addRepeatTime.add(time);
                     }
                     if(checkBox_friday.isChecked())
                     {
-                        Time time = new Time(6, hour_start, hour_end, latitude, longitude, 0, 1);
+                        Time time = new Time(6, hour_start, hour_end, latitude, longitude, date, 0, 1);
                         Log.w("Time_friday", time.toString());
                         addRepeatTime.add(time);
                     }
                     if(checkBox_saturday.isChecked())
                     {
-                        Time time = new Time(7, hour_start, hour_end, latitude, longitude, 0, 1);
+                        Time time = new Time(7, hour_start, hour_end, latitude, longitude, date, 0, 1);
                         Log.w("Time_saturday", time.toString());
                         addRepeatTime.add(time);
                     }
                     boolean wasError = false;
-                    for(Time eachTime : addRepeatTime)
+                    if(addRepeatTime.size() == 0)
                     {
-                        if(!dal_time.addNewTime(eachTime, this))
-                        {
-                            wasError = true;
-                        }
+                        new AlertDialog.Builder(this)
+                                .setTitle("Empty fields")
+                                .setMessage("You have to choose day(s) of tracking!")
+                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which)
+                                    {
+                                        // continue with delete
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // do nothing
+                                    }
+                                })
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
                     }
-                    if(!wasError)
-                    {
-                        this.finish();
+                    else {
+                        for (Time eachTime : addRepeatTime) {
+                            if (!dal_time.addNewTime(eachTime, this)) {
+                                wasError = true;
+                            }
+                        }
+                        if (!wasError) {
+                            this.finish();
+                        }
                     }
                 }
                 List<Time> times = dal_time.getAllTimeByLatLng(latitude, longitude, this);

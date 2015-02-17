@@ -52,6 +52,7 @@ public class AllMarkerActivity extends ActionBarActivity implements AdapterView.
         listView.setAdapter(markerAdapter);
         listView.setOnItemClickListener(this);
         listView.setOnItemLongClickListener(this);
+
     }
 
     @Override
@@ -72,6 +73,7 @@ public class AllMarkerActivity extends ActionBarActivity implements AdapterView.
         listView.setAdapter(markerAdapter);
         listView.setOnItemClickListener(this);
         listView.setOnItemLongClickListener(this);
+        
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
@@ -151,6 +153,18 @@ public class AllMarkerActivity extends ActionBarActivity implements AdapterView.
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
 
-        return false;
+        return true;
+    }
+
+    public void onClick_menu_home(MenuItem item)
+    {
+        Intent i = new Intent(this, MainActivity.class);
+        startActivity(i);
+    }
+
+    public void onClick_menu_map(MenuItem item)
+    {
+        Intent i = new Intent(this, MapsActivity.class);
+        startActivity(i);
     }
 }

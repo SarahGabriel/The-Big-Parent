@@ -48,9 +48,10 @@
             android:name=".MapOverlay"
             android:label="@string/title_activity_map_overlay" >
         </activity>
+        <!--android:label="@string/title_activity_add_location"-->
+
         <activity
             android:name=".Activities.AddLocationActivity"
-            android:label="@string/title_activity_add_location"
             android:parentActivityName=".Activities.MapsActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -66,7 +67,7 @@
         </activity>
         <activity
             android:name=".Activities.MarkerOptionsActivity"
-            android:label="@string/title_activity_marker_options"
+            android:label=""
             android:parentActivityName=".Activities.MapsActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -91,23 +92,24 @@
 
         <activity
             android:name=".Activities.TimeActivity"
-            android:label="@string/title_activity_time"
+            android:label=""
             android:parentActivityName=".Activities.MarkerOptionsActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.thebigparent.sg.thebigparent.Activities.MarkerOptionsActivity" />
         </activity>
+        <!--android:label="@string/title_activity_add_time"-->
         <activity
             android:name=".Activities.AddTimeActivity"
-            android:label="@string/title_activity_add_time" >
+            android:label="">
         </activity>
         <activity
             android:name=".Activities.AllTrackingTimeActivity"
-            android:label="@string/title_activity_all_tracking_time" >
+            android:label="" >
         </activity>
         <activity
             android:name=".Activities.AllMarkerActivity"
-            android:label="@string/title_activity_all_marker" >
+            android:label="" >
         </activity>
     </application>
 

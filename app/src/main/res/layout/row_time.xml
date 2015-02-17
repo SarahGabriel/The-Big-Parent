@@ -59,6 +59,14 @@
 
         <TextView
             style="@style/TextAppearance.AppCompat.Subhead"
+            android:text="no repeat"
+            android:id="@+id/no_repeat_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"/>
+
+        <TextView
+            style="@style/TextAppearance.AppCompat.Subhead"
             android:id="@+id/location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

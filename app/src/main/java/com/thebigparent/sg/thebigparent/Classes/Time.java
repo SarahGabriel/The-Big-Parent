@@ -12,8 +12,9 @@ public class Time
     private String latitude;
     private int noRepeat;
     private int isSwitchOn;
+    private String date;
 
-    public Time(int day, String hourStart, String hourEnd, String latitude, String longitude, int noRepeat, int isSwitchOn)
+    public Time(int day, String hourStart, String hourEnd, String latitude, String longitude, String date, int noRepeat, int isSwitchOn)
 
     {
         this.day = day;
@@ -21,6 +22,7 @@ public class Time
         this.hourEnd = hourEnd;
         this.longitude = longitude;
         this.latitude = latitude;
+        this.date = date;
         this.noRepeat = noRepeat;
         this.isSwitchOn = isSwitchOn;
     }
@@ -65,6 +67,14 @@ public class Time
         this.latitude = latitude;
     }
 
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
     public int isNoRepeat() {
         return noRepeat;
     }
@@ -91,6 +101,7 @@ public class Time
                 ", latitude='" + latitude + '\'' +
                 ", noRepeat=" + noRepeat +
                 ", isSwitchOn=" + isSwitchOn +
+                ", date='" + date + '\'' +
                 '}';
     }
 }

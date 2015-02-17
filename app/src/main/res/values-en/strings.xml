@@ -12,9 +12,9 @@
     <string name="thursday">thu</string>
     <string name="friday">fri</string>
     <string name="saturday">sat</string>
-    <string name="hour_start">Hours start:</string>
+    <string name="hour_start">Tracking starts at:</string>
     <string name="delete_location">Delete Location</string>
-    <string name="hour_end">Hours End:</string>
+    <string name="hour_end">Tracking end at:</string>
     <string name="action_locations">Locations list</string>
     <string name="tracking_time">All my Tracking Time</string>
     <string name="add_tracking_time">Add Tracking Time</string>
@@ -31,4 +31,9 @@
     <string name="action_delete_marker">Delete Marker</string>
     <string name="tracker_time">The current trackering time is:</string>
     <string name="no_tracker_time">You have no tracking time for this hour of the day!</string>
+    <string name="edit_radius">Edit radius</string>
+    <string name="Save" />
+    <string name="save">Save</string>
+    <string name="action_home">Home</string>
+    <string name="action_map">Map</string>
 </resources>
