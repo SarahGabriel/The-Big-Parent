@@ -92,6 +92,14 @@ public class GpsService extends Service {
                 {
                     Toast.makeText(getApplicationContext(), markerLocationLatLng.toString(), Toast.LENGTH_LONG).show();
                 }
+                else {
+                    Toast.makeText(getApplicationContext(), "markerLocationLatLng NULL", Toast.LENGTH_LONG).show();
+                }
+
+                if(markerLocationLatLng != null)
+                {
+                    Toast.makeText(getApplicationContext(), markerLocationLatLng.toString(), Toast.LENGTH_LONG).show();
+                }
                 else
                 {
                     Toast.makeText(getApplicationContext(), "markerLocationLatLng NULL", Toast.LENGTH_LONG).show();
