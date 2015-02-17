@@ -3,11 +3,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.thebigparent.sg.thebigparent.Activities.MarkerOptionsActivity">
 
-    <item android:id="@+id/action_settings"
+
+    <item android:id="@+id/action_home"
+        android:icon="@drawable/ic_action_home"
+        android:title="@string/action_home"
+        app:showAsAction="ifRoom"
+        android:onClick="onClick_menu_home"/>
+
+    <item android:id="@+id/action_map"
+        android:icon="@drawable/ic_action_map"
+        android:title="@string/action_map"
+        app:showAsAction="ifRoom"
+        android:onClick="onClick_menu_map"/>
+
+    <item android:id="@+id/action_delete_marker"
         android:title="@string/action_delete_marker"
         android:orderInCategory="100"
         android:onClick="onClick_menu_delete_marker"
         app:showAsAction="never" />
-
 
 </menu>

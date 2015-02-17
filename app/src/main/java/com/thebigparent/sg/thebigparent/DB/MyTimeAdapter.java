@@ -11,7 +11,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.thebigparent.sg.thebigparent.BL.Bl_app;
-import com.thebigparent.sg.thebigparent.Classes.Time;
 import com.thebigparent.sg.thebigparent.Dal.Dal_time;
 import com.thebigparent.sg.thebigparent.R;
 
@@ -27,7 +26,7 @@ public class MyTimeAdapter extends ArrayAdapter<String> implements CompoundButto
     //private String[] times;
     private List<String> times;
     private String[] parser, parserHours;
-    private String day, latitude, longitude, hour_start, hour_end;
+    private String day, latitude, longitude, hour_start, hour_end, no_repeat;
 
     Dal_time dal_time;
 
@@ -52,6 +51,8 @@ public class MyTimeAdapter extends ArrayAdapter<String> implements CompoundButto
 
         TextView hours_textView = (TextView) view.findViewById(R.id.hours);
         TextView day_textView = (TextView)view.findViewById(R.id.all_days);
+        TextView no_repeat_textView = (TextView)view.findViewById(R.id.no_repeat_time);
+
         Switch switcher = (Switch)view.findViewById(R.id.switcher);
 
 
@@ -63,9 +64,19 @@ public class MyTimeAdapter extends ArrayAdapter<String> implements CompoundButto
         hour_end = parserHours[1].trim();
         latitude = parser[3].trim();
         longitude = parser[4].trim();
+        no_repeat = parser[5].trim();
 
         day_textView.setText(dayToString(day));
         hours_textView.setText(parser[1]);
+
+        if(no_repeat.equals("1"))
+        {
+            no_repeat_textView.setText("no repeat");
+        }
+        else
+        {
+            no_repeat_textView.setText("");
+        }
 
         int isSwitcherOn = Integer.parseInt(parser[2]);
         if(isSwitcherOn == 1)
@@ -78,6 +89,8 @@ public class MyTimeAdapter extends ArrayAdapter<String> implements CompoundButto
         }
         latitude = parser[3];
         longitude = parser[4];
+
+        switcher.setTag(view);
         switcher.setOnCheckedChangeListener(this);
         return convertView;
     }
@@ -108,7 +121,7 @@ public class MyTimeAdapter extends ArrayAdapter<String> implements CompoundButto
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
     {
-
+        View view = (View)buttonView.getTag();
         if(isChecked)
         {
             Log.w("isChecked" , "true");
@@ -118,23 +131,14 @@ public class MyTimeAdapter extends ArrayAdapter<String> implements CompoundButto
             Log.w("isChecked" , "false");
         }
 
-        if(isChecked)  // if turn off clear sms prefs
-        {
-            Bl_app.clearSmsPrefsIfSwitchOff(latitude, longitude, getContext());
-        }
-
-        View viewParentRoot = buttonView.getRootView();
-        TextView location_name_textView = (TextView)viewParentRoot.findViewById(R.id.location);
-//        TextView location_lat_textView = (TextView)viewParentRoot.findViewById(R.id.location_lat);
-//        TextView location_lng_textView = (TextView)viewParentRoot.findViewById(R.id.location_lng);
-        TextView day_textView = (TextView)viewParentRoot.findViewById(R.id.all_days);
-        TextView hours_textView = (TextView)viewParentRoot.findViewById(R.id.hours);
+        TextView location_name_textView = (TextView)view.findViewById(R.id.location);
+        TextView day_textView = (TextView)view.findViewById(R.id.all_days);
+        TextView hours_textView = (TextView)view.findViewById(R.id.hours);
 
         String[] parser = hours_textView.getText().toString().split("-");
 
         String location_name = location_name_textView.getText().toString().trim();
-//        String location_lat = location_lat_textView.getText().toString().trim();
-//        String location_lng = location_lng_textView.getText().toString().trim();
+
         String day = day_textView.getText().toString().trim();
         String hour_start = parser[0].trim();
         String hour_end = parser[1].trim();
@@ -148,8 +152,7 @@ public class MyTimeAdapter extends ArrayAdapter<String> implements CompoundButto
 
         if(isChecked)
         {
-
-
+            Bl_app.clearSmsPrefsIfSwitchOff(latitude, longitude, getContext());
             try {
                 dal_time.changeSwitchOn(day, hour_start, hour_end, latitude, longitude, getContext());
             } catch (SQLException e) {

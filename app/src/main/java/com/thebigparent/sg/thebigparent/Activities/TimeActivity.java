@@ -16,6 +16,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.thebigparent.sg.thebigparent.BL.Bl_app;
 import com.thebigparent.sg.thebigparent.DB.MyTimeAdapter;
 import com.thebigparent.sg.thebigparent.Dal.Dal_location;
 import com.thebigparent.sg.thebigparent.Dal.Dal_time;
@@ -31,6 +32,7 @@ public class TimeActivity extends ActionBarActivity implements AdapterView.OnIte
     private MyTimeAdapter timeAdapter;
     private Dal_time dal_time;
     private Dal_location dal_location;
+    private Bl_app bl_app;
 
     private String latitude, longitude;
 
@@ -55,6 +57,15 @@ public class TimeActivity extends ActionBarActivity implements AdapterView.OnIte
         catch (ParseException e) {
             e.printStackTrace();
         }
+
+        try
+        {
+            bl_app.deleteExpiredNoRepeatTimes(this);
+        }
+        catch (ParseException e)
+        {
+            e.printStackTrace();
+        }
         listView = (ListView)findViewById(R.id.list_time);
 
         Intent i = getIntent();
@@ -77,7 +88,14 @@ public class TimeActivity extends ActionBarActivity implements AdapterView.OnIte
         super.onResume();
 
         List<String> allHours = dal_time.getAllHoursAndDayByLatLng(latitude, longitude, this);
-        //List<Time> allTimes = dal_time.getAllTimeByLatLng(latitude, longitude, this);
+        try
+        {
+            bl_app.deleteExpiredNoRepeatTimes(this);
+        }
+        catch (ParseException e)
+        {
+            e.printStackTrace();
+        }
         timeAdapter = new MyTimeAdapter(this, android.R.layout.activity_list_item, R.id.list_time, allHours);
         listView.setAdapter(timeAdapter);
         listView.setOnItemClickListener(this);

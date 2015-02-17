@@ -14,6 +14,7 @@ import android.os.IBinder;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.thebigparent.sg.thebigparent.BL.Bl_app;
@@ -37,6 +38,8 @@ public class GpsService extends Service {
     private final String EMPTY = "empty";
     private final String END_TIME = "endTime";
     private final String DAY = "empty";
+    private Dal_time dal_time;
+    private Bl_app bl_app;
 
     LocationManager locationManager;
 
@@ -49,7 +52,14 @@ public class GpsService extends Service {
             Dal_location dal_location = new Dal_location();
 
             String radius;
-
+            try
+            {
+                bl_app.deleteExpiredNoRepeatTimes(getApplicationContext());
+            }
+            catch (ParseException e)
+            {
+                e.printStackTrace();
+            }
             LatLng markerLocationLatLng = null;
             MapLocation markerLocation;
 
@@ -78,7 +88,15 @@ public class GpsService extends Service {
             try
             {
                 markerLocationLatLng = dal_time.getSwitchOnLocationByDateAndTime(dayOfWeek, hourOfDay, getApplicationContext());
+                if(markerLocationLatLng != null)
+                {
+                    Toast.makeText(getApplicationContext(), markerLocationLatLng.toString(), Toast.LENGTH_LONG).show();
+                }
+                else
+                {
+                    Toast.makeText(getApplicationContext(), "markerLocationLatLng NULL", Toast.LENGTH_LONG).show();
 
+                }
             }
             catch (ParseException e)
             {

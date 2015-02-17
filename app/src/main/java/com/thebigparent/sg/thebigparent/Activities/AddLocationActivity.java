@@ -95,9 +95,8 @@ public class AddLocationActivity extends Activity
             if (resultCode == RESULT_OK)
             {
                 contactName = data.getStringExtra("name");
-//                Log.w("onResult", contactName);
-//                Log.w("onResultLongitude", longitude);
-//                Log.w("onResultLatitude", latitude);
+
+
                 contact.setText(contactName);
                 backFromActivity = true;            // Flag returned from Settings activity
 

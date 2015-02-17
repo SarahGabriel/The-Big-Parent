@@ -28,7 +28,7 @@ public class AllTimeAdapter extends ArrayAdapter<String> implements CompoundButt
     //private String[] times;
     private List<String> times;
     private String[] parser, parserHours;
-    private String day, latitude, longitude, hour_start, hour_end;
+    private String day, latitude, longitude, hour_start, hour_end, no_repeat;
 
     Dal_time dal_time;
     Dal_location dal_location;
@@ -59,18 +59,15 @@ public class AllTimeAdapter extends ArrayAdapter<String> implements CompoundButt
         TextView location_textView = (TextView)view.findViewById(R.id.location);
         TextView location_lat = (TextView)view.findViewById(R.id.location_lat);
         TextView location_lng = (TextView)view.findViewById(R.id.location_lng);
+        TextView no_repeat_textView = (TextView)view.findViewById(R.id.no_repeat_time);
         Switch switcher = (Switch)view.findViewById(R.id.switcher);
-
-
 
         day = parser[0].trim();
         hour_start = parserHours[0].trim();
         hour_end = parserHours[1].trim();
         latitude = parser[3].trim();
         longitude = parser[4].trim();
-
-        Log.i("latitude_adapter", latitude);
-        Log.i("longitude_adapter", longitude);
+        no_repeat = parser[5].trim();
 
         MapLocation mapLocation = dal_location.getLocation(latitude, longitude, getContext());
 
@@ -79,6 +76,15 @@ public class AllTimeAdapter extends ArrayAdapter<String> implements CompoundButt
         location_textView.setText(mapLocation.getLocationName());
         location_lat.setText(latitude);
         location_lng.setText(longitude);
+
+        if(no_repeat.equals("1"))
+        {
+            no_repeat_textView.setText("no repeat");
+        }
+        else
+        {
+            no_repeat_textView.setText("");
+        }
 
         int isSwitcherOn = Integer.parseInt(parser[2]);
 
@@ -93,6 +99,9 @@ public class AllTimeAdapter extends ArrayAdapter<String> implements CompoundButt
 
         latitude = parser[3];
         longitude = parser[4];
+
+        //switcher.setTag(position);
+        switcher.setTag(view);
         switcher.setOnCheckedChangeListener(this);
         return convertView;
     }
@@ -124,13 +133,23 @@ public class AllTimeAdapter extends ArrayAdapter<String> implements CompoundButt
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
     {
+        View view = (View)buttonView.getTag();
+        Log.w("allRow", view.toString()+"");
+        if(isChecked)
+        {
+            Log.w("isChecked" , "true");
+        }
+        else
+        {
+            Log.w("isChecked" , "false");
+        }
 
-        View viewParentRoot = buttonView.getRootView();
-        TextView location_name_textView = (TextView)viewParentRoot.findViewById(R.id.location);
-        TextView location_lat_textView = (TextView)viewParentRoot.findViewById(R.id.location_lat);
-        TextView location_lng_textView = (TextView)viewParentRoot.findViewById(R.id.location_lng);
-        TextView day_textView = (TextView)viewParentRoot.findViewById(R.id.all_days);
-        TextView hours_textView = (TextView)viewParentRoot.findViewById(R.id.hours);
+
+        TextView location_name_textView = (TextView)view.findViewById(R.id.location);
+        TextView location_lat_textView = (TextView)view.findViewById(R.id.location_lat);
+        TextView location_lng_textView = (TextView)view.findViewById(R.id.location_lng);
+        TextView day_textView = (TextView)view.findViewById(R.id.all_days);
+        TextView hours_textView = (TextView)view.findViewById(R.id.hours);
 
         String[] parser = hours_textView.getText().toString().split("-");
 
@@ -142,13 +161,6 @@ public class AllTimeAdapter extends ArrayAdapter<String> implements CompoundButt
         String hour_end = parser[1].trim();
 
 
-        if(isChecked)      // if turn off clear sms prefs
-        {
-            Bl_app.clearSmsPrefsIfSwitchOff(location_lat, location_lng, getContext());
-        }
-
-
-
         Log.i("ON CHECK", location_name);
         Log.i("ON CHECK latitude", location_lat);
         Log.i("ON CHECK longitude", location_lng);
@@ -158,8 +170,9 @@ public class AllTimeAdapter extends ArrayAdapter<String> implements CompoundButt
 
         if(isChecked)
         {
+            Bl_app.clearSmsPrefsIfSwitchOff(location_lat, location_lng, getContext());
             Log.i("SWITCH ON", location_name);
-            Log.i("SWITCH CONTEXT", viewParentRoot.getContext().toString());
+            Log.i("SWITCH CONTEXT", view.getContext().toString());
             try
             {
                 dal_time.changeSwitchOn(day, hour_start, hour_end, location_lat, location_lng, getContext());
@@ -171,8 +184,9 @@ public class AllTimeAdapter extends ArrayAdapter<String> implements CompoundButt
         }
         else
         {
+
             Log.i("SWITCH OFF", location_name);
-            Log.i("SWITCH CONTEXT", viewParentRoot.getContext().toString());
+            Log.i("SWITCH CONTEXT", view.getContext().toString());
             try
             {
                 dal_time.changeSwitchOff(day, hour_start, hour_end, location_lat, location_lng, getContext());

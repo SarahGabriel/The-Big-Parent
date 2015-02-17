@@ -12,9 +12,9 @@
     <string name="thursday">thu</string>
     <string name="friday">fri</string>
     <string name="saturday">sat</string>
-    <string name="hour_start">Hours start:</string>
+    <string name="hour_start">Tracking starts at:</string>
     <string name="delete_location">Delete Location</string>
-    <string name="hour_end">Hours End:</string>
+    <string name="hour_end">Tracking end at:</string>
     <string name="action_locations">Locations list</string>
     <string name="tracking_time">All my Tracking Time</string>
     <string name="add_tracking_time">Add Tracking Time</string>

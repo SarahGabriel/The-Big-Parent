@@ -1,10 +1,10 @@
 package com.thebigparent.sg.thebigparent.Activities;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.telephony.SmsManager;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,7 +21,7 @@ import com.thebigparent.sg.thebigparent.R;
 
 import java.sql.SQLException;
 
-public class MarkerOptionsActivity extends ActionBarActivity
+public class MarkerOptionsActivity extends Activity
 {
     final static public int REQUEST_CODE_ALL_TIMES = 107;
 
@@ -72,7 +72,19 @@ public class MarkerOptionsActivity extends ActionBarActivity
         }
     }
 
-
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        if(dal_time.getAllTimeByLatLng(latitude, longitude, this).size() == 0)
+        {
+            allTrackingTime.setEnabled(false);
+        }
+        else
+        {
+            allTrackingTime.setEnabled(true);
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
@@ -219,5 +231,17 @@ public class MarkerOptionsActivity extends ActionBarActivity
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
 
+    }
+
+    public void onClick_menu_home(MenuItem item)
+    {
+        Intent i = new Intent(this, MainActivity.class);
+        startActivity(i);
+    }
+
+    public void onClick_menu_map(MenuItem item)
+    {
+        Intent i = new Intent(this, MapsActivity.class);
+        startActivity(i);
     }
 }

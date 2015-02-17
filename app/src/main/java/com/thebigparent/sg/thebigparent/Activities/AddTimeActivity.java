@@ -267,16 +267,35 @@ public class AddTimeActivity extends ActionBarActivity// implements CompoundButt
                         addRepeatTime.add(time);
                     }
                     boolean wasError = false;
-                    for(Time eachTime : addRepeatTime)
+                    if(addRepeatTime.size() == 0)
                     {
-                        if(!dal_time.addNewTime(eachTime, this))
-                        {
-                            wasError = true;
-                        }
+                        new AlertDialog.Builder(this)
+                                .setTitle("Empty fields")
+                                .setMessage("You have to choose day(s) of tracking!")
+                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which)
+                                    {
+                                        // continue with delete
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // do nothing
+                                    }
+                                })
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
                     }
-                    if(!wasError)
-                    {
-                        this.finish();
+                    else {
+                        for (Time eachTime : addRepeatTime) {
+                            if (!dal_time.addNewTime(eachTime, this)) {
+                                wasError = true;
+                            }
+                        }
+                        if (!wasError) {
+                            this.finish();
+                        }
                     }
                 }
                 List<Time> times = dal_time.getAllTimeByLatLng(latitude, longitude, this);

@@ -8,12 +8,18 @@ import com.thebigparent.sg.thebigparent.Classes.Time;
 import com.thebigparent.sg.thebigparent.Dal.Dal_time;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Guy on 12/02/15.
  */
-public class Bl_app {
+public class Bl_app
+{
 
 
 
@@ -72,6 +78,54 @@ public class Bl_app {
             e.printStackTrace();
         }
         mediaPlayer.start();
+    }
+
+    public static void deleteExpiredNoRepeatTimes(Context context) throws ParseException
+    {
+
+        Dal_time dal_time = new Dal_time();
+        List<Time> times = dal_time.getTimesByNoRepeat(context);
+        if(times.size() == 0)
+        {
+            return;
+        }
+        //Toast.makeText(context, times.toString(), Toast.LENGTH_LONG).show();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+        Date today = new Date();        // day of today
+        String date = dateFormat.format(today);     // formatting date to string
+
+        Calendar now = Calendar.getInstance();
+        int hour = now.get(Calendar.HOUR_OF_DAY);
+        int minute = now.get(Calendar.MINUTE);
+        String hourOfDay = String.format("%02d", hour) + ":" + String.format("%02d", minute);
+
+        Date hour_today = sdf.parse(hourOfDay);
+        Date date_today = dateFormat.parse(date);    // back from string to date with format
+
+
+        for(Time time : times)
+        {
+            String hour_start = time.getHourStart();
+            String hour_end = time.getHourEnd();
+            String date_time = time.getDate();
+
+            Date dateTime = dateFormat.parse(date_time);
+            Date hourEnd = sdf.parse(hour_end);
+
+            if(date_today.after(dateTime))
+            {
+                dal_time.deleteTime(time, context);
+
+            }
+            else if(hour_today.after(hourEnd))
+            {
+                dal_time.deleteTime(time, context);
+            }
+            // Date hour_time = sdf.parse(hour_start + ":" + hour_end);
+        }
+
     }
 
 }
