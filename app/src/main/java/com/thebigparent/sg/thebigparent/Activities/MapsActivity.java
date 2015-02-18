@@ -137,7 +137,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLon
     private void addMarkersOnMap()          // Add all locations as markers on the map
     {
        latLngList = dal_location.getAllLocationsMarker(getApplicationContext());            // Get all location Latlng from db
-       circlesRadius = new ArrayList<Circle>();     // New list for all markers radii
+       circlesRadius = new ArrayList<>();     // New list for all markers radii
 
        Circle c;
 
@@ -151,8 +151,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLon
            LatLng latLng = new LatLng(latitude, longitude);
 
 //           "\u200e" -- in order to support hebrew language in the marker
-           mMap.addMarker(new MarkerOptions().position(latLng).title("\u200e"+location.getLocationName()).snippet("\u200e"+location.getContact().toString()));      // Add the marker
-           c = mMap.addCircle(new CircleOptions().center(latLng).radius(Math.round(Float.valueOf(location.getRadius().toString()))));                                      // Add the radius
+           mMap.addMarker(new MarkerOptions().position(latLng).title("\u200e"+location.getLocationName()).snippet("\u200e"+location.getContact()));      // Add the marker
+           c = mMap.addCircle(new CircleOptions().center(latLng).radius(Math.round(Float.valueOf(location.getRadius()))));                                      // Add the radius
 
            circlesRadius.add(c);        // Add the radius to the radii list
        }
@@ -201,7 +201,10 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLon
             i++;
         }
 
-        markerCircle.setStrokeColor(Color.RED);     // Set the chosen radius red
+        if (markerCircle != null)
+        {
+            markerCircle.setStrokeColor(Color.RED);     // Set the chosen radius red
+        }
 
         plus.setVisibility(View.VISIBLE);           // Set radius edit UI visible
         minus.setVisibility(View.VISIBLE);
@@ -276,7 +279,6 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLon
         String latitude = String.valueOf(clickedMarker.getPosition().latitude);
         String longitude = String.valueOf(clickedMarker.getPosition().longitude);
         dal_location.updateRadius(latitude, longitude, String.valueOf(markerCircle.getRadius()), this);
-        //todo: add radius to db
 
     }
 
@@ -286,7 +288,6 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLon
         String latitude = String.valueOf(clickedMarker.getPosition().latitude);
         String longitude = String.valueOf(clickedMarker.getPosition().longitude);
         dal_location.updateRadius(latitude, longitude, String.valueOf(markerCircle.getRadius()), this);
-        //todo: add radius to db
     }
 
 

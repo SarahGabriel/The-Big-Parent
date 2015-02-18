@@ -142,18 +142,22 @@ public class TimeActivity extends ActionBarActivity implements AdapterView.OnIte
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)     // delete time on long click
     {
 
+        String title = getString(R.string.alertTitle_delete_time);
+        String message = getString(R.string.alertMessage_delete_time);
+        final String messageToast = getString(R.string.alertToast_deleted_time);
+
         final TextView hours = (TextView)view.findViewById(R.id.hours);
         final TextView day = (TextView)view.findViewById(R.id.all_days);
         new AlertDialog.Builder(this)
-                .setTitle("Delete Time")    // todo change string
-                .setMessage("Are you sure you want to delete this Tracking time?") // todo change string
+                .setTitle(title)
+                .setMessage(message)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener()
                 {
                     public void onClick(DialogInterface dialog, int which)
                     {
                         // continue with delete
                         dal_time.deleteTime(latitude, longitude, hours.getText().toString(), day.getText().toString(), getApplicationContext());
-                        Toast.makeText(getApplicationContext(), "Deleted time: " + hours.getText().toString() + ", " + day.getText().toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), messageToast+ " " + hours.getText().toString() + ", " + day.getText().toString(), Toast.LENGTH_LONG).show();
                         onResume();
                     }
                 })
@@ -172,17 +176,19 @@ public class TimeActivity extends ActionBarActivity implements AdapterView.OnIte
 
     public void onClick_menu_delete_all_times(MenuItem item)        // delete all tracking times
     {
+        String title = getString(R.string.alertTitle_delete_all_times);
+        String message = getString(R.string.alertMessage_delete_all_times);
+        final String messageToast = getString(R.string.alertToast_all_times_deleted);
+
         new AlertDialog.Builder(this)
-                .setTitle("Delete All Times") // todo change string
-                .setMessage("Are you sure you want to delete all Times? You cannot undo it!") // todo change string
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener()
-                {
-                    public void onClick(DialogInterface dialog, int which)
-                    {
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
                         // continue with delete
                         dal_time.deleteAllTimes(latitude, longitude, getBaseContext());
 
-                        Toast.makeText(getApplicationContext(), "All times deleted", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), messageToast, Toast.LENGTH_LONG).show();
                         onResume();
                     }
                 })

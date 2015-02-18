@@ -19,6 +19,7 @@ import android.widget.RemoteViews;
 import android.widget.TextView;
 
 import com.thebigparent.sg.thebigparent.BL.Bl_app;
+import com.thebigparent.sg.thebigparent.Classes.MapLocation;
 import com.thebigparent.sg.thebigparent.Classes.Time;
 import com.thebigparent.sg.thebigparent.Dal.Dal_location;
 import com.thebigparent.sg.thebigparent.Dal.Dal_time;
@@ -111,9 +112,10 @@ public class MainActivity extends Activity
             int minute = now.get(Calendar.MINUTE);
             String hourOfDay = String.format("%02d", hour) + ":" + String.format("%02d", minute);
             Time trackingTime = dal_time.getCurrentTimeSwitchOn(dayOfWeek, hourOfDay, this);
+            MapLocation location = dal_location.getLocation(trackingTime.getLatitude(), trackingTime.getLongitude(), this);
             if(trackingTime != null)
             {
-                trackingTime_textView.setText(trackingTime.getHourStart() + " - " + trackingTime.getHourEnd());
+                trackingTime_textView.setText(location.getLocationName() + ":  " + trackingTime.getHourStart() + " - " + trackingTime.getHourEnd());
             }
             else
             {
@@ -184,11 +186,12 @@ public class MainActivity extends Activity
 
 //        Edit widget - changing background to green color and set text when location on
         Context context = this;
+        String widgetText = getString(R.string.widget_bigParent_on);
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.working_status_app_widget);
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
         ComponentName thisWidget = new ComponentName(context, WorkingStatusAppWidget.class);
         remoteViews.setInt(R.id.widgetLayout, "setBackgroundResource", R.drawable.on_background);
-        remoteViews.setTextViewText(R.id.appwidget_text, "The Big Parent: ON"); // todo change string
+        remoteViews.setTextViewText(R.id.appwidget_text, widgetText);
         appWidgetManager.updateAppWidget(thisWidget, remoteViews);
 
     }
@@ -209,12 +212,16 @@ public class MainActivity extends Activity
 
 //         Edit Widget - changing background to red color and set text when location off
         Context context = this;
+        String widgetText = getString(R.string.widget_bigParent_off);
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.working_status_app_widget);
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
         ComponentName thisWidget = new ComponentName(context, WorkingStatusAppWidget.class);
         remoteViews.setInt(R.id.widgetLayout, "setBackgroundResource", R.drawable.off_background);
-        remoteViews.setTextViewText(R.id.appwidget_text, "The Big Parent: OFF"); // todo change string
+        remoteViews.setTextViewText(R.id.appwidget_text, widgetText);
         appWidgetManager.updateAppWidget(thisWidget, remoteViews);
+
+        String title = getString(R.string.alertTitle_empty_fields);
+        String message = getString(R.string.alertMessage_empty_days);
     }
 
 
@@ -257,12 +264,13 @@ public class MainActivity extends Activity
     public void showSettingsAlert()         // show alert dialog
     {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-
+        String title = getString(R.string.alertTitle_location_off);
+        String message = getString(R.string.alertMessage_turn_on_location);
         // Setting Dialog Title
-        alertDialog.setTitle("Locations are OFF!");     // todo change string
+        alertDialog.setTitle(title);
 
         // Setting Dialog Message
-        alertDialog.setMessage("Please Turn on locations");
+        alertDialog.setMessage(message);
 
         // On pressing Settings button
         alertDialog.setPositiveButton(
@@ -276,6 +284,8 @@ public class MainActivity extends Activity
                 });
 
         alertDialog.show();
+
+
     }
 
 

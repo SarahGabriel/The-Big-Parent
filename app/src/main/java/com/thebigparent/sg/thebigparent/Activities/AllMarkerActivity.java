@@ -123,10 +123,13 @@ public class AllMarkerActivity extends ActionBarActivity implements AdapterView.
         final TextView longitude = (TextView)view.findViewById(R.id.lng_marker);
         final TextView location = (TextView)view.findViewById(R.id.location_marker);
 
-        //todo change string
+        String title = getString(R.string.alertTitle_delete_marker);
+        String message = getString(R.string.alertMessage_delete_marker);
+        final String messageToast = getString(R.string.alertToast_deleted_marker);
+
         new AlertDialog.Builder(this)
-                .setTitle("Delete Marker")
-                .setMessage("Are you sure you want to delete this Marker? It will also erase all your tracking time!")
+                .setTitle(title)
+                .setMessage(message)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener()
                 {
                     public void onClick(DialogInterface dialog, int which)
@@ -137,8 +140,8 @@ public class AllMarkerActivity extends ActionBarActivity implements AdapterView.
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
-                        Toast.makeText(getApplicationContext(), "Deleted marker: " + location.getText().toString(), Toast.LENGTH_LONG).show();
-                        onResume();
+                        Toast.makeText(getApplicationContext(), messageToast + " " + location.getText().toString(), Toast.LENGTH_LONG).show();
+                                onResume();
                     }
                 })
                 .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener()

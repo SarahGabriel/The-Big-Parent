@@ -129,17 +129,20 @@ public class AllTrackingTimeActivity extends ActionBarActivity implements Adapte
         final TextView hours = (TextView)view.findViewById(R.id.hours);
         final TextView day = (TextView)view.findViewById(R.id.all_days);
 
-        //todo change string
+        String title = getString(R.string.alertTitle_delete_time);
+        String message = getString(R.string.alertMessage_delete_time);
+        final String messageToast = getString(R.string.alertToast_deleted_time);
+
         new AlertDialog.Builder(this)
-                .setTitle("Delete Time")
-                .setMessage("Are you sure you want to delete this tracking time?")
+                .setTitle(title)
+                .setMessage(message)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener()
                 {
                     public void onClick(DialogInterface dialog, int which)
                     {
                         // continue with delete
                         dal_time.deleteTime(latitude.getText().toString(), longitude.getText().toString(), hours.getText().toString(), day.getText().toString(), getBaseContext());
-                        Toast.makeText(getApplicationContext(), "Deleted time: " + location.getText().toString() + ": " + hours.getText().toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), messageToast + " " + location.getText().toString() + ": " + hours.getText().toString(), Toast.LENGTH_LONG).show();
                         onResume();
                     }
                 })

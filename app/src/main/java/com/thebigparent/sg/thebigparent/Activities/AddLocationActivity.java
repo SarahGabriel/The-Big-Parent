@@ -133,8 +133,10 @@ public class AddLocationActivity extends Activity
         MapLocation location;
         AlertDialogManager alertDialogManager = new AlertDialogManager();
         if(radius_editText.getText().equals("") || locationName_editText.getText().equals("") || !backFromActivity)     // check if all the fields are fill
-        {//todo change string
-            alertDialogManager.showAlertDialog(this, "Fields missing!", "Please fill all the fields");  // show alert on error
+        {
+            String title = getString(R.string.alertTitle_empty_fields);
+            String message = getString(R.string.alertMessage_fill_fields);
+            alertDialogManager.showAlertDialog(this, title, message);  // show alert on error
         }
         else
         {

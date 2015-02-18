@@ -6,9 +6,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.thebigparent.sg.thebigparent.Classes.AlertDialogManager;
 import com.thebigparent.sg.thebigparent.Classes.Time;
 import com.thebigparent.sg.thebigparent.DB.Constants_time;
 import com.thebigparent.sg.thebigparent.DB.MyDbHelper;
@@ -60,15 +60,16 @@ public class Dal_time
 
     private void showDialogMessage(String title, int day, Context context)
     {
+        AlertDialogManager alert = new AlertDialogManager();
+
         String stringDay = convertIntDayToString(day);
         String message = "You already have a tracking time for those hours on " + stringDay;
-
-        new AlertDialog.Builder(context)
+        //alert.showAlertDialog(context, title, message);
+        AlertDialog show = new AlertDialog.Builder(context)
                 .setTitle(title)
                 .setMessage(message)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which)
-                    {
+                    public void onClick(DialogInterface dialog, int which) {
                         // continue with delete
                         dialog.dismiss();
                     }
@@ -84,11 +85,9 @@ public class Dal_time
 
     private boolean isTimeExists(Time time_toCheck, Context context) throws ParseException
     {
-        Log.w("isTimeExists", "IN IT");
         List<Time> timesByDay = getTimesByDay(time_toCheck.getDay(), context);
         if(timesByDay!=null)
         {
-
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 
             Date startHour_toCheck = sdf.parse(time_toCheck.getHourStart());
@@ -100,19 +99,13 @@ public class Dal_time
                 Date startHour_checkWith = sdf.parse(timeByDay.getHourStart());
                 Date endHour_checkWith = sdf.parse(timeByDay.getHourEnd());
 
-                Log.i("start_toCheck", startHour_toCheck.toString());
-                Log.i("start_checkWith", startHour_checkWith.toString());
-                Log.i("end_toCheck", endHour_toCheck.toString());
-                Log.i("end_checkWith", endHour_checkWith.toString());
-
-                if(startHour_toCheck.after(startHour_checkWith) && startHour_toCheck.before(endHour_checkWith))
+                if((startHour_toCheck.after(startHour_checkWith) ||startHour_toCheck.equals(startHour_checkWith))
+                        && startHour_toCheck.before(endHour_checkWith))
                 {
-                    Log.i("if 1", startHour_toCheck + " after? " + startHour_checkWith + " && " + startHour_toCheck + " before? " + endHour_checkWith);
                     return true;
                 }
                 else if(endHour_toCheck.after(startHour_checkWith) && endHour_toCheck.before(endHour_checkWith))
                 {
-                    Log.i("if 2", endHour_toCheck + " after? " + startHour_checkWith + " && " + endHour_toCheck + " before? " + endHour_checkWith);
                     return true;
                 }
             }

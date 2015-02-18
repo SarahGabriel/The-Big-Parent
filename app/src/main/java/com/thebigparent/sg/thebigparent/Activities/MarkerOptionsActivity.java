@@ -165,40 +165,15 @@ public class MarkerOptionsActivity extends Activity
 
     }
 
-// todo DELETE!
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-//    {     // Called when Setting activity returns
-//        super.onActivityResult(requestCode, resultCode, data);
-//
-//        if (requestCode == REQUEST_CODE_ALL_TIMES)
-//        {
-//            if (resultCode == RESULT_OK)
-//            {
-//                latitude = data.getStringExtra("lat");
-//                longitude = data.getStringExtra("lng");
-//
-//                location = dal_location.getLocation(latitude, longitude, this);
-//
-//                contactName.setText(location.getContact().toString());
-//                locationName.setText(location.getLocationName().toString());
-//                radius.setText(location.getRadius().toString());
-//                if(dal_time.getAllTimeByLatLng(latitude, longitude, this).size() == 0)
-//                {
-//                    allTrackingTime.setEnabled(false);
-//                }
-//                else
-//                {
-//                    allTrackingTime.setEnabled(true);
-//                }
-//            }
-//        }
-//    }
-
     public void onClick_menu_delete_marker(MenuItem item)       // on click Delete Marker
     {
+        String title = getString(R.string.alertTitle_delete_marker);
+        String message = getString(R.string.alertMessage_delete_marker);
+        final String messageToast = getString(R.string.alertToast_deleted_marker);
+
         new AlertDialog.Builder(this)
-                .setTitle("Delete Marker")      // todo change string
-                .setMessage("Are you sure you want to delete this Marker? It will also erase all your tracking time!") // todo change string
+                .setTitle(title)
+                .setMessage(message)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener()
                 {
                     public void onClick(DialogInterface dialog, int which)
@@ -210,7 +185,7 @@ public class MarkerOptionsActivity extends Activity
                         }
                         catch (SQLException e) { e.printStackTrace();}
 
-                        Toast.makeText(getApplicationContext(), "Deleted marker: " + location.getLocationName(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), messageToast+ " " + location.getLocationName(), Toast.LENGTH_LONG).show();
 
                         onBackPressed();
                     }

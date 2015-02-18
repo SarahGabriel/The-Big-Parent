@@ -106,7 +106,7 @@ public class AddTimeActivity extends ActionBarActivity implements CompoundButton
     }
 
 //  On button click - add tracking time to DB
-    public void onClick_add_tracking_time(View view)
+    public void onClick_add_tracking_time(View view) throws ParseException
     {
         Dal_time dal_time = new Dal_time();         // reference to all functions that handle the DB
 
@@ -150,8 +150,11 @@ public class AddTimeActivity extends ActionBarActivity implements CompoundButton
 
 //                    Checking that the hours haven't passed yet
                     if(date_end.before(current_hour))
-                    {//todo change string
-                        alertDialogManager.showAlertDialog(this, "Wrong Tracking Hours", "Your tracking hours have already passed");
+                    {
+
+                        String title = getString(R.string.alertTitle_wrong_tracking_hours);
+                        String message = getString(R.string.alertMessage_hours_passed);
+                        alertDialogManager.showAlertDialog(this, title, message);
                     }
                     else
                     {
@@ -216,23 +219,33 @@ public class AddTimeActivity extends ActionBarActivity implements CompoundButton
                     }
                     if(addRepeatTime.size() == 0)
                     {
-                        //todo change string
-                        alertDialogManager.showAlertDialog(this, "Empty fields", "You have to choose day(s) of tracking!");
+                        //empty fields error
+                        String title = getString(R.string.alertTitle_empty_fields);
+                        String message = getString(R.string.alertMessage_empty_days);
+                        alertDialogManager.showAlertDialog(this, title, message);
                     }
                     else
                     {
+                        boolean wasError = false;
                         for (Time eachTime : addRepeatTime)
                         {
-                            dal_time.addNewTime(eachTime, this);        // add all tracking time to the DB
+                            if (!dal_time.addNewTime(eachTime, this))
+                            {
+                                wasError = true;
+                            }
                         }
-                        this.finish();
+                        if (!wasError) {
+                            this.finish();
+                        }
                     }
                 }
             }
             else
             {
-                //todo change string
-                alertDialogManager.showAlertDialog(this, "Wrong Tracking Hours", "Start tracking hour needs to be before end tracking hour");
+                //Start tracking hour needs to be before end tracking hour - error
+                String title = getString(R.string.alertTitle_wrong_tracking_hours);
+                String message = getString(R.string.alertMessage_wrong_tracking_hours);
+                alertDialogManager.showAlertDialog(this, title, message);
             }
         }
         catch (ParseException e)
