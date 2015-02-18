@@ -5,8 +5,8 @@ import android.provider.BaseColumns;
 /**
  * Created by Sarah on 11-Feb-15.
  */
-public class Constants_time implements BaseColumns
-{                        // Constants for "bestResults" table
+public class Constants_time implements BaseColumns    // Constants for "bestResults" table
+{
 
     public static final String TABLE_NAME = "Time" ;
     public static final String COLUMN_NAME_DAY = "Day";

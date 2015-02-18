@@ -10,14 +10,18 @@ public class MapLocation
     private String latitude;
     private String radius;
     private String contact;
+    private String phone;
+    private int numOfContacts;
 
-    public MapLocation(String locationName, String longitude, String latitude, String radius, String contact)
+    public MapLocation(String locationName, String longitude, String latitude, String radius, String contact ,String phone,int numOfContacts)
     {
         this.locationName = locationName;
         this.longitude = longitude;
         this.latitude = latitude;
         this.radius = radius;
         this.contact = contact;
+        this.phone = phone;
+        this.numOfContacts = numOfContacts;
     }
 
     public String getLocationName()
@@ -70,6 +74,26 @@ public class MapLocation
         this.contact = contact;
     }
 
+    public String getPhone()
+    {
+        return phone;
+    }
+
+    public void setPhone(String phone)
+    {
+        this.phone = phone;
+    }
+
+    public int getNumOfContacts()
+    {
+        return numOfContacts;
+    }
+
+    public void setNumOfContacts(int numOfContacts)
+    {
+        this.numOfContacts = numOfContacts;
+    }
+
     @Override
     public String toString() {
         return "Location\n{" +
@@ -78,6 +102,8 @@ public class MapLocation
                 ", latitude='" + latitude + '\'' +
                 ", radius='" + radius + '\'' +
                 ", contact='" + contact + '\'' +
+                ", phone='" + phone + '\'' +
+                ", numOfContacts='" + numOfContacts + '\'' +
                 '}';
     }
 }

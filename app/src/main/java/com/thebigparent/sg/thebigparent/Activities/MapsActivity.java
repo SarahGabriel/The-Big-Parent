@@ -106,23 +106,28 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLon
         // Get Current Location
         Location mCurrentLocation = getLastKnownLocation();
 
-        // set map type
-        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-        // Get latitude of the current location
-        double latitude = mCurrentLocation.getLatitude();
+        if(mCurrentLocation != null)
+        {
+            // set map type
+            mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-        // Get longitude of the current location
-        double longitude = mCurrentLocation.getLongitude();
+            // Get latitude of the current location
+            double latitude = mCurrentLocation.getLatitude();
 
-        // Create a LatLng object for the current location
-        LatLng latLng = new LatLng(latitude, longitude);
+            // Get longitude of the current location
+            double longitude = mCurrentLocation.getLongitude();
 
-        // Show the current location in Google Map
-        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(latLng, 14)));
+            // Create a LatLng object for the current location
+            LatLng latLng = new LatLng(latitude, longitude);
 
-        // Add marker to current location
-       // mMap.addMarker(new MarkerOptions().position(latLng).title("You are here!").snippet("Consider yourself located").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+            // Show the current location in Google Map
+            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(latLng, 14)));
+
+            // Add marker to current location
+            // mMap.addMarker(new MarkerOptions().position(latLng).title("You are here!").snippet("Consider yourself located").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+        }
+
     }
 
     private void addMarkersOnMap()          // Add all locations as markers on the map

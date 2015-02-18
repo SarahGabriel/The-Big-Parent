@@ -2,9 +2,13 @@ package com.thebigparent.sg.thebigparent.Activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,10 +30,16 @@ public class AddLocationActivity extends Activity
     private LinearLayout mainLinearLayout;
     private EditText locationName_editText, radius_editText;
     private String contactName;
+    private String phone;
+    private int numOfContacts = 1;
     private Dal_location dal_location;
     private String latitude, longitude;
 
     private boolean backFromActivity = false;
+
+    static final int PICK_CONTACT_REQUEST = 123;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -81,27 +91,60 @@ public class AddLocationActivity extends Activity
 
     public void onClick_add_contact_button(View view)
     {
-        Intent i = new Intent(this, ContactListActivity.class);
-        startActivityForResult(i, REQUEST_CODE);
+
+        Intent pickContactIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+//        Intent pickContactIntent = new Intent(Intent.ACTION_PICK, Uri.parse("content://contacts"));
+        pickContactIntent.setType(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE); // Show user only contacts w/ phone numbers
+        startActivityForResult(pickContactIntent, PICK_CONTACT_REQUEST);
+
+
+//        Intent i = new Intent(this, ContactListActivity.class);
+//        startActivityForResult(i, REQUEST_CODE);
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {     // Called when Setting activity returns
         super.onActivityResult(requestCode, resultCode, data);
 
-        TextView contact = (TextView)findViewById(R.id.contact_name);
-        if (requestCode == REQUEST_CODE)
+        TextView contact = (TextView) findViewById(R.id.contact_name);
+
+        if (requestCode == PICK_CONTACT_REQUEST)
         {
+            backFromActivity = true;
+
             if (resultCode == RESULT_OK)
             {
-                contactName = data.getStringExtra("name");
+                String name = "";
+
+                Uri contactData = data.getData();
+                ContentResolver cr = getContentResolver();
+                Cursor cur = cr.query(contactData, null, null, null, null);
 
 
-                contact.setText(contactName);
-                backFromActivity = true;            // Flag returned from Settings activity
+                if (cur.moveToFirst())
+                {
+
+                    name = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                    contactName= name;
+                    contact.setText(name);
+                    String id2 = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
+
+
+                    if (Integer.parseInt(cur.getString(cur.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0)
+                    {
+                        String phoneNo = cur.getString(cur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                        String id = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
+
+                        phone = phoneNo;
+                        Log.w("HAS_PHONE_NUMBER",name + " " + phoneNo + " " + id);
+
+
+                    }
+                }
 
             }
         }
+
     }
 
     public void onCLick_add_location_button(View view)
@@ -130,7 +173,7 @@ public class AddLocationActivity extends Activity
         }
         else
         {
-            location = new MapLocation(locationName_editText.getText().toString(), longitude, latitude, radius_editText.getText().toString(), contactName);
+            location = new MapLocation(locationName_editText.getText().toString(), longitude, latitude, radius_editText.getText().toString(), contactName ,phone , numOfContacts);
             Log.w("Location", location.toString());
             dal_location.addNewLocation(location, this);
             this.finish();
