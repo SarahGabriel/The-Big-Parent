@@ -3,7 +3,8 @@ package com.thebigparent.sg.thebigparent.DB;
 import android.provider.BaseColumns;
 
 /**
- * Created by Sarah on 11-Feb-15.
+ * Constants_time
+ * Constants of time table
  */
 public class Constants_time implements BaseColumns    // Constants for "bestResults" table
 {

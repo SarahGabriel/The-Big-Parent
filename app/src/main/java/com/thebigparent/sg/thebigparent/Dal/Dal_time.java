@@ -17,24 +17,22 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 /**
- * Created by Sarah on 11-Feb-15.
+ * Dal_time
+ *
+ * DAL of the time in app - all the access to DB for tracking time is through this class
  */
 public class Dal_time
 {
-    public final int SWITCH_ON = 1;
-    public final int SWITCH_OFF = 0;
-    public Dal_time()
-    {
-    }
+    public static final int SWITCH_ON = 1;
+    public static final int SWITCH_OFF = 0;
 
-    public boolean addNewTime(Time time, Context context) throws ParseException
+    public boolean addNewTime(Time time, Context context) throws ParseException     // add new tracking time
     {
-        if(isTimeExists(time, context))
+        if(isTimeExists(time, context))     // if time already exists
         {
             showDialogMessage("Error in adding tracking time", time.getDay(), context);
             return false;
@@ -122,10 +120,9 @@ public class Dal_time
         return false;
     }
 
-    public List<Time> getTimesByDay(int day, Context context)
+    public List<Time> getTimesByDay(int day, Context context)       // get all times by day
     {
-        //String stringDay = convertIntDayToString(day);
-        List<Time> timesByDay = new ArrayList<Time>();
+        List<Time> timesByDay = new ArrayList<>();
 
         MyDbHelper dbHelper = new MyDbHelper(context);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -157,22 +154,16 @@ public class Dal_time
         }
         while (c.moveToNext())
         {
-
-            Log.w("SWITCH", c.getString(6));
             Time timeByDay = new Time(day, c.getString(1), c.getString(2), c.getString(3), c.getString(4), c.getString(5), Integer.parseInt(c.getString(6).trim()), Integer.parseInt(c.getString(7).trim()));
-            Log.w("addTimeByDay", timeByDay.toString());
             timesByDay.add(timeByDay);
         }
-        Log.w("allTimesByDay", timesByDay.toString());
-
         db.close();
-
         return timesByDay;
     }
 
-    public List<Time> getAllTimeByLatLng(String latitude, String longitude, Context context)
+    public List<Time> getAllTimeByLatLng(String latitude, String longitude, Context context)        // get all time by lat-lng
     {
-        List<Time> allTimes = new ArrayList<Time>();
+        List<Time> allTimes = new ArrayList<>();
         MyDbHelper dbHelper = new MyDbHelper(context);
         SQLiteDatabase db1 = dbHelper.getReadableDatabase();
 
@@ -207,68 +198,20 @@ public class Dal_time
             allTimes.add(time);
         }
 
-        Log.w("allTime", allTimes.toString());
-
         db1.close();
-
         return allTimes;
     }
 
-    public List<String> getAllHoursByLatLng(String latitude, String longitude, Context context)
-    {
-        List<String> allHours = new ArrayList<String>();
-        MyDbHelper dbHelper = new MyDbHelper(context);
-        SQLiteDatabase db1 = dbHelper.getReadableDatabase();
-
-        String[] cols={Constants_time.COLUMN_NAME_HOUR_START,
-                Constants_time.COLUMN_NAME_HOUR_END};
-
-
-        Cursor c = db1.query(
-                Constants_time.TABLE_NAME,    // The table to query
-                cols,                    // The columns to return
-                Constants_time.COLUMN_NAME_LATITUDE + "=? AND " + Constants_time.COLUMN_NAME_LONGITUDE + "=?",
-                new String[]{latitude, longitude},
-                null,                    // don't group the rows
-                null,                    // don't filter by row groups
-                null                     // The sort order
-        );
-
-        while (c.moveToNext())
-        {
-
-            String hour_start = c.getString(0).trim();
-            String hour_end = c.getString(1).trim();
-            String hour = hour_start + " - " + hour_end;
-            allHours.add(hour);
-        }
-
-        Log.w("allHours", allHours.toString());
-
-        db1.close();
-
-        return allHours;
-    }
-
-    public Time getCurrentTime(int dayOfWeek, String hourOfDay, Context context)
+    public Time getCurrentTime(int dayOfWeek, String hourOfDay, Context context)        // get current racking time by real hour of day
     {
         MyDbHelper dbHelper = new MyDbHelper(context);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         Time time = null;
-        String[] cols={Constants_time.COLUMN_NAME_HOUR_START,
-                Constants_time.COLUMN_NAME_HOUR_END,
-                Constants_time.COLUMN_NAME_LATITUDE,
-                Constants_time.COLUMN_NAME_LONGITUDE,
-                Constants_time.COLUMN_NAME_NO_REPEAT,
-                Constants_time.COLUMN_NAME_SWITCHER,
-                Constants_time.COLUMN_NAME_DATE};
-
-
 
         String selectQuery = "SELECT * FROM " + Constants_time.TABLE_NAME +
                 " WHERE " + Constants_time.COLUMN_NAME_DAY + " = ? AND HourStart <= ? AND HourEnd >= ?";
-        Cursor c = db.rawQuery(selectQuery, new String[] { String.valueOf(dayOfWeek), hourOfDay.toString(), hourOfDay.toString() });
+        Cursor c = db.rawQuery(selectQuery, new String[] { String.valueOf(dayOfWeek), hourOfDay, hourOfDay });
         if(c.getCount() == 0)
         {
             db.close();
@@ -291,28 +234,19 @@ public class Dal_time
         return time;
     }
 
-    public Time getCurrentTimeSwitchOn(int dayOfWeek, String hourOfDay, Context context)
+    public Time getCurrentTimeSwitchOn(int dayOfWeek, String hourOfDay, Context context)        // get all time which are on
     {
         MyDbHelper dbHelper = new MyDbHelper(context);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         Time time = null;
-        String[] cols={Constants_time.COLUMN_NAME_HOUR_START,
-                Constants_time.COLUMN_NAME_HOUR_END,
-                Constants_time.COLUMN_NAME_LATITUDE,
-                Constants_time.COLUMN_NAME_LONGITUDE,
-                Constants_time.COLUMN_NAME_NO_REPEAT,
-                Constants_time.COLUMN_NAME_SWITCHER,
-                Constants_time.COLUMN_NAME_DATE};
-
-
 
         String selectQuery = "SELECT * FROM " + Constants_time.TABLE_NAME +
                 " WHERE " + Constants_time.COLUMN_NAME_DAY + " = ? AND " +
                 Constants_time.COLUMN_NAME_HOUR_START + " <= ? AND " +
                 Constants_time.COLUMN_NAME_HOUR_END + " >= ? AND " +
                 Constants_time.COLUMN_NAME_SWITCHER + "= ?";
-        Cursor c = db.rawQuery(selectQuery, new String[] { String.valueOf(dayOfWeek), hourOfDay.toString(), hourOfDay.toString(), String.valueOf(SWITCH_ON) });
+        Cursor c = db.rawQuery(selectQuery, new String[] { String.valueOf(dayOfWeek), hourOfDay, hourOfDay, String.valueOf(SWITCH_ON) });
         if(c.getCount() == 0)
         {
             db.close();
@@ -335,9 +269,9 @@ public class Dal_time
         return time;
     }
 
-    public List<String> getAllHoursAndDayByLatLng(String latitude, String longitude, Context context)
+    public List<String> getAllHoursAndDayByLatLng(String latitude, String longitude, Context context)       // get all hours in string by date and lat-lng
     {
-        List<String> allHoursAndDays = new ArrayList<String>();
+        List<String> allHoursAndDays = new ArrayList<>();
         MyDbHelper dbHelper = new MyDbHelper(context);
         SQLiteDatabase db1 = dbHelper.getReadableDatabase();
 
@@ -346,8 +280,6 @@ public class Dal_time
                 Constants_time.COLUMN_NAME_HOUR_END,
                 Constants_time.COLUMN_NAME_SWITCHER,
                 Constants_time.COLUMN_NAME_NO_REPEAT};
-        String[] sort = {Constants_time.COLUMN_NAME_DAY, Constants_time.COLUMN_NAME_HOUR_START};
-
 
         Cursor c = db1.query(
                 Constants_time.TABLE_NAME,    // The table to query
@@ -370,13 +302,11 @@ public class Dal_time
             allHoursAndDays.add(time);
         }
 
-        Log.w("allHoursAndDays", allHoursAndDays.toString());
-
         db1.close();
 
         return allHoursAndDays;
     }
-    public void deleteTime(String latitude, String longitude, String hours, String day, Context context)
+    public void deleteTime(String latitude, String longitude, String hours, String day, Context context)        // delete time
     {
         MyDbHelper dbHelper = new MyDbHelper(context);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -386,32 +316,30 @@ public class Dal_time
         hour_start = parser[0].trim();
         hour_end = parser[1].trim();
         int day_int = convertStringDayToInt(day);
-        int cursor = db.delete(Constants_time.TABLE_NAME, Constants_time.COLUMN_NAME_LATITUDE + " = ? AND " +
+        db.delete(Constants_time.TABLE_NAME, Constants_time.COLUMN_NAME_LATITUDE + " = ? AND " +
                                              Constants_time.COLUMN_NAME_LONGITUDE + " = ? AND " +
                                              Constants_time.COLUMN_NAME_DAY + " = ? AND " +
                                              Constants_time.COLUMN_NAME_HOUR_START + " = ? AND " +
                                              Constants_time.COLUMN_NAME_HOUR_END + " = ?",
                 new String[] { latitude, longitude, String.valueOf(day_int), hour_start, hour_end});
-        Log.w("delete", cursor +"");
         db.close();
     }
 
-    public void deleteTime(Time time, Context context)
+    public void deleteTime(Time time, Context context)      // delete time
     {
         MyDbHelper dbHelper = new MyDbHelper(context);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        int cursor = db.delete(Constants_time.TABLE_NAME, Constants_time.COLUMN_NAME_LATITUDE + " = ? AND " +
+        db.delete(Constants_time.TABLE_NAME, Constants_time.COLUMN_NAME_LATITUDE + " = ? AND " +
                         Constants_time.COLUMN_NAME_LONGITUDE + " = ? AND " +
                         Constants_time.COLUMN_NAME_DAY + " = ? AND " +
                         Constants_time.COLUMN_NAME_HOUR_START + " = ? AND " +
                         Constants_time.COLUMN_NAME_HOUR_END + " = ?",
                 new String[] { time.getLatitude(), time.getLongitude(), String.valueOf(time.getDay()), time.getHourStart(), time.getHourEnd()});
-        Log.w("delete", cursor +"");
         db.close();
     }
 
-    public void deleteAllTimes(String latitude, String longitude, Context context)
+    public void deleteAllTimes(String latitude, String longitude, Context context)      // delete all times by lat-lng
     {
         MyDbHelper dbHelper = new MyDbHelper(context);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -427,32 +355,26 @@ public class Dal_time
     }
 
     public void changeSwitchOn(String day, String hour_start, String hour_end, String latitude, String longitude, Context context) throws SQLException
-    {
+    {// update time to be on
         MyDbHelper dbHelper = new MyDbHelper(context);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         int day_int = convertStringDayToInt(day);
 
-        String[] cols={Constants_time.COLUMN_NAME_DAY,
-                Constants_time.COLUMN_NAME_HOUR_START,
-                Constants_time.COLUMN_NAME_HOUR_END,
-                Constants_time.COLUMN_NAME_SWITCHER};
-
         ContentValues values = new ContentValues();
         values.put(Constants_time.COLUMN_NAME_SWITCHER, SWITCH_ON);
 
-        int cursor = db.update(Constants_time.TABLE_NAME, values, Constants_time.COLUMN_NAME_LATITUDE + " = ? AND " +
+       db.update(Constants_time.TABLE_NAME, values, Constants_time.COLUMN_NAME_LATITUDE + " = ? AND " +
                         Constants_time.COLUMN_NAME_LONGITUDE + " = ? AND " +
                         Constants_time.COLUMN_NAME_DAY + " = ? AND " +
                         Constants_time.COLUMN_NAME_HOUR_START + " = ? AND " +
                         Constants_time.COLUMN_NAME_HOUR_END + " = ?",
                 new String[]{latitude, longitude, String.valueOf(day_int), hour_start, hour_end});
-        Log.w("cursor SWITCH ON", cursor + "");
         db.close();
     }
 
     public void changeSwitchOff(String day, String hour_start, String hour_end, String latitude, String longitude, Context context) throws SQLException
-    {
+    { // update time to be off
 
         MyDbHelper dbHelper = new MyDbHelper(context);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -462,35 +384,28 @@ public class Dal_time
         ContentValues values = new ContentValues();
         values.put(Constants_time.COLUMN_NAME_SWITCHER, SWITCH_OFF);
 
-        int cursor = db.update(Constants_time.TABLE_NAME, values,
+        db.update(Constants_time.TABLE_NAME, values,
                         Constants_time.COLUMN_NAME_LATITUDE + " = ? AND " +
                         Constants_time.COLUMN_NAME_LONGITUDE + " = ? AND " +
                         Constants_time.COLUMN_NAME_DAY + " = ? AND " +
                         Constants_time.COLUMN_NAME_HOUR_START + " = ? AND " +
                         Constants_time.COLUMN_NAME_HOUR_END + " = ?",
                 new String[]{latitude, longitude, String.valueOf(day_int), hour_start, hour_end});
-        Log.w("cursor SWITCH OFF", cursor + "");
         db.close();
     }
 
-    public LatLng getSwitchOnLocationByDateAndTime(int dayOfWeek, String hourOfDay, Context context) throws ParseException
+    public LatLng getSwitchOnLocationByDateAndTime(int dayOfWeek, String hourOfDay, Context context) throws ParseException  // get all location on by date and time
     {
-
-        Log.i("SwitchOnLocationDateTime", dayOfWeek + " - " + hourOfDay);
-
         MyDbHelper dbHelper = new MyDbHelper(context);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         LatLng latLng = null;
-        String[] cols={Constants_time.COLUMN_NAME_LONGITUDE, Constants_time.COLUMN_NAME_LATITUDE};
-
 
         String selectQuery = "SELECT * FROM " + Constants_time.TABLE_NAME +
                 " WHERE " + Constants_time.COLUMN_NAME_DAY + " = ? AND " +
                 Constants_time.COLUMN_NAME_HOUR_START + " <= ? AND " +
                 Constants_time.COLUMN_NAME_HOUR_END + " >= ? AND " +
                 Constants_time.COLUMN_NAME_SWITCHER + " = ?";
-        Cursor c = db.rawQuery(selectQuery, new String[] { String.valueOf(dayOfWeek), hourOfDay.toString(), hourOfDay.toString(), String.valueOf(SWITCH_ON) });
+        Cursor c = db.rawQuery(selectQuery, new String[] { String.valueOf(dayOfWeek), hourOfDay, hourOfDay, String.valueOf(SWITCH_ON) });
         if(c.getCount() == 0)
         {
             db.close();
@@ -508,9 +423,9 @@ public class Dal_time
        return latLng;
     }
 
-    public List<String> getAllTime(Context context)
+    public List<String> getAllTime(Context context)     // get all tracking times
     {
-        List<String> allHoursAndDays = new ArrayList<String>();
+        List<String> allHoursAndDays = new ArrayList<>();
         MyDbHelper dbHelper = new MyDbHelper(context);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
@@ -550,9 +465,9 @@ public class Dal_time
         return allHoursAndDays;
     }
 
-    public List<Time> getTimesByNoRepeat(Context context)
+    public List<Time> getTimesByNoRepeat(Context context)       // get all no_repeat times
     {
-        List<Time> times = new ArrayList<Time>();
+        List<Time> times = new ArrayList<>();
 
         MyDbHelper dbHelper = new MyDbHelper(context);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -596,16 +511,12 @@ public class Dal_time
             Time timeByDay = new Time(Integer.parseInt(day), hour_start, hour_end, latitude, longitude, date, Integer.parseInt(no_repeat), Integer.parseInt(switcher));
             times.add(timeByDay);
         }
-        Log.w("allTimesByNoRepeat", times.toString());
-
         db.close();
-
         return times;
     }
 
-    private int convertStringDayToInt(String day)
+    private int convertStringDayToInt(String day)     //  convert string date to int
     {
-        Calendar date;
         int day_int = 0;
         switch (day)
         {

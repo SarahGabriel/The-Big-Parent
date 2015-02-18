@@ -1,15 +1,12 @@
 package com.thebigparent.sg.thebigparent.Activities;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ContentResolver;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,20 +15,23 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.thebigparent.sg.thebigparent.Classes.AlertDialogManager;
 import com.thebigparent.sg.thebigparent.Classes.MapLocation;
 import com.thebigparent.sg.thebigparent.Dal.Dal_location;
 import com.thebigparent.sg.thebigparent.R;
 
-import java.util.Locale;
-
+/**
+ * AddLocationActivity
+ *
+ * Add location on specific marker on map
+ */
 public class AddLocationActivity extends Activity
 {
-    final static public int REQUEST_CODE = 109;
     private LinearLayout mainLinearLayout;
     private EditText locationName_editText, radius_editText;
     private String contactName;
     private String phone;
-    private int numOfContacts = 1;
+    private static final int NUM_OF_CONTACTS = 1;
     private Dal_location dal_location;
     private String latitude, longitude;
 
@@ -47,22 +47,23 @@ public class AddLocationActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_location);
 
-        Intent i = getIntent();
+        Intent i = getIntent();     // get information from previous activity
         latitude = i.getStringExtra("latitude");
         longitude = i.getStringExtra("longitude");
 
         dal_location = new Dal_location();
 
+//        find views
         mainLinearLayout = (LinearLayout)findViewById(R.id.main_layout_add_location);
         locationName_editText = (EditText)findViewById(R.id.add_location_edit_text_name);
         radius_editText = (EditText)findViewById(R.id.add_location_edit_text_radius);
-        setDirectionLayout();
+        setDirectionLayout();           // set direction layout if language changed
 
     }
 
-    private void setDirectionLayout()
+    private void setDirectionLayout()       // set direction layout if language changed
     {
-        String language = Locale.getDefault().getDisplayLanguage();// ---> English
+       // String language = Locale.getDefault().getDisplayLanguage();// ---> English
         mainLinearLayout.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
     }
 
@@ -89,21 +90,15 @@ public class AddLocationActivity extends Activity
         return super.onOptionsItemSelected(item);
     }
 
-    public void onClick_add_contact_button(View view)
+    public void onClick_add_contact_button(View view)       // go to contact in device
     {
-
         Intent pickContactIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-//        Intent pickContactIntent = new Intent(Intent.ACTION_PICK, Uri.parse("content://contacts"));
         pickContactIntent.setType(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE); // Show user only contacts w/ phone numbers
         startActivityForResult(pickContactIntent, PICK_CONTACT_REQUEST);
-
-
-//        Intent i = new Intent(this, ContactListActivity.class);
-//        startActivityForResult(i, REQUEST_CODE);
     }
 
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {     // Called when Setting activity returns
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)  // Called when Setting activity returns
+    {
         super.onActivityResult(requestCode, resultCode, data);
 
         TextView contact = (TextView) findViewById(R.id.contact_name);
@@ -111,34 +106,20 @@ public class AddLocationActivity extends Activity
         if (requestCode == PICK_CONTACT_REQUEST)
         {
             backFromActivity = true;
-
             if (resultCode == RESULT_OK)
             {
-                String name = "";
-
-                Uri contactData = data.getData();
+                Uri contactData = data.getData();       // get data from chosen contact
                 ContentResolver cr = getContentResolver();
-                Cursor cur = cr.query(contactData, null, null, null, null);
-
+                Cursor cur = cr.query(contactData, null, null, null, null);     // get in cursor contact data
 
                 if (cur.moveToFirst())
                 {
+                    contactName = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));   // get name of contact
+                    contact.setText(contactName);      // set contact name text view
 
-                    name = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-                    contactName= name;
-                    contact.setText(name);
-                    String id2 = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
-
-
-                    if (Integer.parseInt(cur.getString(cur.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0)
+                    if (Integer.parseInt(cur.getString(cur.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0)  // if contact has a phone number
                     {
-                        String phoneNo = cur.getString(cur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                        String id = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
-
-                        phone = phoneNo;
-                        Log.w("HAS_PHONE_NUMBER",name + " " + phoneNo + " " + id);
-
-
+                        phone = cur.getString(cur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));       // get phone number of contact
                     }
                 }
 
@@ -147,57 +128,37 @@ public class AddLocationActivity extends Activity
 
     }
 
-    public void onCLick_add_location_button(View view)
+    public void onCLick_add_location_button(View view)      // on button click "Add location"
     {
         MapLocation location;
-
-        if(radius_editText.getText().equals("") || locationName_editText.getText().equals("") || !backFromActivity)
-        {
-            new AlertDialog.Builder(this)
-                    .setTitle("Fields missing!")
-                    .setMessage("Please fill all the fields")
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which)
-                        {
-                            // continue with delete
-                            dialog.dismiss();
-                        }
-                    })
-                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            // do nothing
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
+        AlertDialogManager alertDialogManager = new AlertDialogManager();
+        if(radius_editText.getText().equals("") || locationName_editText.getText().equals("") || !backFromActivity)     // check if all the fields are fill
+        {//todo change string
+            alertDialogManager.showAlertDialog(this, "Fields missing!", "Please fill all the fields");  // show alert on error
         }
         else
         {
-            location = new MapLocation(locationName_editText.getText().toString(), longitude, latitude, radius_editText.getText().toString(), contactName ,phone , numOfContacts);
-            Log.w("Location", location.toString());
-            dal_location.addNewLocation(location, this);
-            this.finish();
+            location = new MapLocation(locationName_editText.getText().toString(), longitude, latitude, radius_editText.getText().toString(), contactName ,phone , NUM_OF_CONTACTS); // create location
+            dal_location.addNewLocation(location, this);        // add location to DB
+            this.finish();      // go back to activity
         }
     }
 
 
-    public void onClick_editRadius_button(View view)
+    public void onClick_editRadius_button(View view)        // on click "Edit Radius"
     {
+
         Button edit_button = (Button)findViewById(R.id.edit_radius_button);
         radius_editText = (EditText)findViewById(R.id.add_location_edit_text_radius);
-        if(edit_button.getText().equals(view.getContext().getResources().getString(R.string.edit_radius)))
+        if(edit_button.getText().equals(view.getContext().getResources().getString(R.string.edit_radius)))      // on click "Edit Radius"
         {
-
-            radius_editText.setEnabled(true);
-            //editRadius.setText("");
-            edit_button.setText(view.getContext().getResources().getString(R.string.save));
+            radius_editText.setEnabled(true);       // make possible to edit the radius
+            edit_button.setText(view.getContext().getResources().getString(R.string.save));         // change button text to "Save"
         }
         else
         {
-            radius_editText.setEnabled(false);
-            //editRadius.setText("100");
-            edit_button.setText(view.getContext().getResources().getString(R.string.edit_radius));
-           // dal_location.updateRadius(latitude, longitude, editRadius.getText().toString(), view.getContext());
+            radius_editText.setEnabled(false);      // on click "Save"
+            edit_button.setText(view.getContext().getResources().getString(R.string.edit_radius));   // change back button text to "Edit Radius"
         }
 
 

@@ -12,7 +12,6 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.telephony.SmsManager;
-import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
@@ -235,6 +234,7 @@ public class GpsService extends Service {       // Tracking location service
                 }
 
 
+                assert hourOfDayDate != null;
                 if(hourOfDayDate.after(endTimeDate))       // If the tracking time ended
                 {
                     Bl_app.clearSmsPrefs(this);             // Clear sms shared prefs

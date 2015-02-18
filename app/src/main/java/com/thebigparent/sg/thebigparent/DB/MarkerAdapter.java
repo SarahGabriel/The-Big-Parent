@@ -1,7 +1,6 @@
 package com.thebigparent.sg.thebigparent.DB;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,14 +14,14 @@ import com.thebigparent.sg.thebigparent.R;
 import java.util.List;
 
 /**
- * Created by Sarah on 15-Feb-15.
+ * MarkerAdapter
+ *
+ * Adapter to show in list all the markers in map
  */
 public class MarkerAdapter extends ArrayAdapter<String>
 {
     private LayoutInflater inflater;
-    //private String[] times;
     private List<String> markers;
-    private String[] parser;
 
     Dal_time dal_time;
     Dal_location dal_location;
@@ -38,14 +37,14 @@ public class MarkerAdapter extends ArrayAdapter<String>
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
     @Override
-    public View getView(int position, View convertView, ViewGroup parent)
+    public View getView(int position, View convertView, ViewGroup parent)       // what happens in each row of the list
     {
         View view = inflater.inflate(R.layout.row_marker, null);
         convertView = view;
 
         String marker = markers.get(position);
 
-        parser = marker.split(",");
+        String[] parser = marker.split(",");
 
 //        Getting all text view
         TextView id_marker_textView = (TextView) view.findViewById(R.id.id_marker_field);
@@ -67,9 +66,6 @@ public class MarkerAdapter extends ArrayAdapter<String>
         lng_marker_textView.setText(lng_marker);
         location_marker_textView.setText(location_marker);
         contact_marker_textView.setText(contact_marker);
-
-        Log.i("latitude_marker", lat_marker);
-        Log.i("longitude_marker", lng_marker);
 
         return convertView;
     }

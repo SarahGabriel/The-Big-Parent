@@ -1,7 +1,6 @@
 package com.thebigparent.sg.thebigparent.DB;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,14 +19,14 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Created by Sarah on 12-Feb-15.
+ * AllTimeAdapter
+ *
+ * Adapter to show in list all the tracking times
  */
 public class AllTimeAdapter extends ArrayAdapter<String> implements CompoundButton.OnCheckedChangeListener      // Adapter to show all times in layout
 {
     private LayoutInflater inflater;
     private List<String> times;
-    private String[] parser, parserHours;
-    private String day, latitude, longitude, hour_start, hour_end, no_repeat;
 
     Dal_time dal_time;              // For time db calls
     Dal_location dal_location;      // For location db calls
@@ -46,15 +45,14 @@ public class AllTimeAdapter extends ArrayAdapter<String> implements CompoundButt
 
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent)
+    public View getView(int position, View convertView, ViewGroup parent)       // what happens in each row of list
     {
         View view = inflater.inflate(R.layout.row_time, null);
         convertView = view;
 
         String time = times.get(position);
 
-        parser = time.split(",");
-        parserHours = parser[1].split("-");
+        String[] parser = time.split(",");      // get all details in parsing the String from the adapter
 
         TextView hours_textView = (TextView) view.findViewById(R.id.hours);
         TextView day_textView = (TextView)view.findViewById(R.id.all_days);
@@ -64,22 +62,21 @@ public class AllTimeAdapter extends ArrayAdapter<String> implements CompoundButt
         TextView no_repeat_textView = (TextView)view.findViewById(R.id.no_repeat_time);
         Switch switcher = (Switch)view.findViewById(R.id.switcher);
 
-        day = parser[0].trim();
-        hour_start = parserHours[0].trim();
-        hour_end = parserHours[1].trim();
-        latitude = parser[3].trim();
-        longitude = parser[4].trim();
-        no_repeat = parser[5].trim();
+        String day = parser[0].trim();
+        String latitude = parser[3].trim();
+        String longitude = parser[4].trim();
+        String no_repeat = parser[5].trim();
 
         MapLocation mapLocation = dal_location.getLocation(latitude, longitude, getContext());
 
+            // set all the views using the parser
         day_textView.setText(dayToString(day));
         hours_textView.setText(parser[1]);
         location_textView.setText(mapLocation.getLocationName());
         location_lat.setText(latitude);
         location_lng.setText(longitude);
 
-        if(no_repeat.equals("1"))
+        if(no_repeat.equals("1"))       // if no_repeat, set view
         {
             no_repeat_textView.setText("no repeat");
         }
@@ -90,25 +87,66 @@ public class AllTimeAdapter extends ArrayAdapter<String> implements CompoundButt
 
         int isSwitcherOn = Integer.parseInt(parser[2]);
 
-        if(isSwitcherOn == 1)
+        if(isSwitcherOn == 1)       // change switch on
         {
             switcher.setChecked(true);
         }
         else
         {
-            switcher.setChecked(false);
+            switcher.setChecked(false);     // change switch off
         }
 
-        latitude = parser[3];
-        longitude = parser[4];
-
-        //switcher.setTag(position);
         switcher.setTag(view);
         switcher.setOnCheckedChangeListener(this);
         return convertView;
     }
 
-    private String dayToString(String intDay)
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)      // on switcher change - from on to off or the opposite
+    {
+        View view = (View)buttonView.getTag();
+
+        // getting all views from the row
+        TextView location_lat_textView = (TextView)view.findViewById(R.id.location_lat);
+        TextView location_lng_textView = (TextView)view.findViewById(R.id.location_lng);
+        TextView day_textView = (TextView)view.findViewById(R.id.all_days);
+        TextView hours_textView = (TextView)view.findViewById(R.id.hours);
+
+        String[] parser = hours_textView.getText().toString().split("-");
+
+        String location_lat = location_lat_textView.getText().toString().trim();
+        String location_lng = location_lng_textView.getText().toString().trim();
+        String day = day_textView.getText().toString().trim();
+        String hour_start = parser[0].trim();
+        String hour_end = parser[1].trim();
+
+        if(isChecked) // is switched to be on
+        {
+            Bl_app.clearSmsPrefsIfSwitchOff(location_lat, location_lng, getContext()); // clear preferences to allow back sending message if needed
+
+            try
+            {
+                dal_time.changeSwitchOn(day, hour_start, hour_end, location_lat, location_lng, getContext());   // update DB
+            }
+            catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
+        }
+        else    // is switched to be off
+        {
+
+            try
+            {
+                dal_time.changeSwitchOff(day, hour_start, hour_end, location_lat, location_lng, getContext());      // update DB
+            }
+            catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private String dayToString(String intDay)       // convert in day to string
     {
 
         int int_day = Integer.parseInt(intDay);
@@ -132,72 +170,7 @@ public class AllTimeAdapter extends ArrayAdapter<String> implements CompoundButt
         return day;
     }
 
-    @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
-    {
-        View view = (View)buttonView.getTag();
-        Log.w("allRow", view.toString()+"");
-        if(isChecked)
-        {
-            Log.w("isChecked" , "true");
-        }
-        else
-        {
-            Log.w("isChecked" , "false");
-        }
 
-
-        TextView location_name_textView = (TextView)view.findViewById(R.id.location);
-        TextView location_lat_textView = (TextView)view.findViewById(R.id.location_lat);
-        TextView location_lng_textView = (TextView)view.findViewById(R.id.location_lng);
-        TextView day_textView = (TextView)view.findViewById(R.id.all_days);
-        TextView hours_textView = (TextView)view.findViewById(R.id.hours);
-
-        String[] parser = hours_textView.getText().toString().split("-");
-
-        String location_name = location_name_textView.getText().toString().trim();
-        String location_lat = location_lat_textView.getText().toString().trim();
-        String location_lng = location_lng_textView.getText().toString().trim();
-        String day = day_textView.getText().toString().trim();
-        String hour_start = parser[0].trim();
-        String hour_end = parser[1].trim();
-
-
-        Log.i("ON CHECK", location_name);
-        Log.i("ON CHECK latitude", location_lat);
-        Log.i("ON CHECK longitude", location_lng);
-        Log.i("ON CHECK day", day);
-        Log.i("ON CHECK hour_start", hour_start);
-        Log.i("ON CHECK hour_end", hour_end);
-
-        if(isChecked)
-        {
-            Bl_app.clearSmsPrefsIfSwitchOff(location_lat, location_lng, getContext());
-            Log.i("SWITCH ON", location_name);
-            Log.i("SWITCH CONTEXT", view.getContext().toString());
-            try
-            {
-                dal_time.changeSwitchOn(day, hour_start, hour_end, location_lat, location_lng, getContext());
-            }
-            catch (SQLException e)
-            {
-                e.printStackTrace();
-            }
-        }
-        else
-        {
-
-            Log.i("SWITCH OFF", location_name);
-            Log.i("SWITCH CONTEXT", view.getContext().toString());
-            try
-            {
-                dal_time.changeSwitchOff(day, hour_start, hour_end, location_lat, location_lng, getContext());
-            }
-            catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
 
 }

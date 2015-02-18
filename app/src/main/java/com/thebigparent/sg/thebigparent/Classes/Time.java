@@ -1,8 +1,11 @@
 package com.thebigparent.sg.thebigparent.Classes;
 
 /**
- * Created by Sarah on 11-Feb-15.
+ * Time
+ *
+ * Class of tracking time - using when adding tracking time to DB
  */
+
 public class Time
 {
     private int day;
@@ -14,6 +17,17 @@ public class Time
     private int isSwitchOn;
     private String date;
 
+    /**
+     *
+     * @param day - day of tracking time
+     * @param hourStart   - start tacking time
+     * @param hourEnd   - end tracking time
+     * @param latitude  - latitude of marker
+     * @param longitude - longitude of marker
+     * @param date  - date when tracking time was added
+     * @param noRepeat  - if no_repeat is checked: 0 - false, 1 - true
+     * @param isSwitchOn    - if the tracking is on/off: 0 - off, 1 - on
+     */
     public Time(int day, String hourStart, String hourEnd, String latitude, String longitude, String date, int noRepeat, int isSwitchOn)
 
     {

@@ -57,14 +57,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.thebigparent.sg.thebigparent.Activities.MapsActivity" />
         </activity>
-        <activity
-            android:name=".Activities.ContactListActivity"
-            android:label="@string/title_activity_contact_list"
-            android:parentActivityName=".Activities.AddLocationActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.thebigparent.sg.thebigparent.Activities.AddLocationActivity" />
-        </activity>
+
         <activity
             android:name=".Activities.MarkerOptionsActivity"
             android:label=""

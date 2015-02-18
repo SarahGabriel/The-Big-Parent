@@ -1,7 +1,9 @@
 package com.thebigparent.sg.thebigparent.Classes;
 
 /**
- * Created by Guy on 05/02/15.
+ * MapLocation
+ *
+ * Class of location - using when adding location to DB
  */
 public class MapLocation
 {
@@ -13,6 +15,16 @@ public class MapLocation
     private String phone;
     private int numOfContacts;
 
+    /**
+     *
+     * @param locationName  - name of location
+     * @param longitude  - longitude of location
+     * @param latitude  - latitude of location
+     * @param radius    - radius which the user shouldn't pass when its tracking time
+     * @param contact   - contact to send the message if out of radius
+     * @param phone - phone number of contact
+     * @param numOfContacts - num of contacts to send the message
+     */
     public MapLocation(String locationName, String longitude, String latitude, String radius, String contact ,String phone,int numOfContacts)
     {
         this.locationName = locationName;

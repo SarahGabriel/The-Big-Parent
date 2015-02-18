@@ -1,7 +1,6 @@
 package com.thebigparent.sg.thebigparent.DB;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,15 +17,16 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Created by Sarah on 09-Feb-15.
+ * MyTimeAdapter
+ *
+ * Adapter to show in list all the tracking times from marker in map
  */
 public class MyTimeAdapter extends ArrayAdapter<String> implements CompoundButton.OnCheckedChangeListener
 {
     private LayoutInflater inflater;
-    //private String[] times;
     private List<String> times;
-    private String[] parser, parserHours;
-    private String day, latitude, longitude, hour_start, hour_end, no_repeat;
+    private String latitude;
+    private String longitude;
 
     Dal_time dal_time;
 
@@ -36,36 +36,31 @@ public class MyTimeAdapter extends ArrayAdapter<String> implements CompoundButto
         this.times = items;
 
         dal_time = new Dal_time();
-        inflater = (LayoutInflater) context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+        inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent)
+    public View getView(int position, View convertView, ViewGroup parent)       // what happens in each row of the list
     {
         View view = inflater.inflate(R.layout.row_time, null);
 
         String time = times.get(position);
-        parser = time.split(",");
+        String[] parser = time.split(",");
         convertView = view;
 
+//        find views
         TextView hours_textView = (TextView) view.findViewById(R.id.hours);
         TextView day_textView = (TextView)view.findViewById(R.id.all_days);
         TextView no_repeat_textView = (TextView)view.findViewById(R.id.no_repeat_time);
-
         Switch switcher = (Switch)view.findViewById(R.id.switcher);
 
-
-
-        parserHours = parser[1].split("-");
-
-        day = parser[0].trim();
-        hour_start = parserHours[0].trim();
-        hour_end = parserHours[1].trim();
+        String day = parser[0].trim();
         latitude = parser[3].trim();
         longitude = parser[4].trim();
-        no_repeat = parser[5].trim();
+        String no_repeat = parser[5].trim();
 
+//        set views
         day_textView.setText(dayToString(day));
         hours_textView.setText(parser[1]);
 
@@ -81,11 +76,11 @@ public class MyTimeAdapter extends ArrayAdapter<String> implements CompoundButto
         int isSwitcherOn = Integer.parseInt(parser[2]);
         if(isSwitcherOn == 1)
         {
-            switcher.setChecked(true);
+            switcher.setChecked(true);      // set switch on
         }
         else
         {
-            switcher.setChecked(false);
+            switcher.setChecked(false);     // set switch off
         }
         latitude = parser[3];
         longitude = parser[4];
@@ -93,6 +88,41 @@ public class MyTimeAdapter extends ArrayAdapter<String> implements CompoundButto
         switcher.setTag(view);
         switcher.setOnCheckedChangeListener(this);
         return convertView;
+    }
+
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)      // when switch is changed
+    {
+        View view = (View)buttonView.getTag();
+
+        TextView day_textView = (TextView)view.findViewById(R.id.all_days);
+        TextView hours_textView = (TextView)view.findViewById(R.id.hours);
+
+        String[] parser = hours_textView.getText().toString().split("-");
+
+        String day = day_textView.getText().toString().trim();
+        String hour_start = parser[0].trim();
+        String hour_end = parser[1].trim();
+
+
+        if(isChecked)
+        {
+            Bl_app.clearSmsPrefsIfSwitchOff(latitude, longitude, getContext());
+            try {
+                dal_time.changeSwitchOn(day, hour_start, hour_end, latitude, longitude, getContext());
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        else
+        {
+            try {
+                dal_time.changeSwitchOff(day, hour_start, hour_end, latitude, longitude, getContext());
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private String dayToString(String intDay)
@@ -118,55 +148,4 @@ public class MyTimeAdapter extends ArrayAdapter<String> implements CompoundButto
         return day;
     }
 
-    @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
-    {
-        View view = (View)buttonView.getTag();
-        if(isChecked)
-        {
-            Log.w("isChecked" , "true");
-        }
-        else
-        {
-            Log.w("isChecked" , "false");
-        }
-
-        TextView location_name_textView = (TextView)view.findViewById(R.id.location);
-        TextView day_textView = (TextView)view.findViewById(R.id.all_days);
-        TextView hours_textView = (TextView)view.findViewById(R.id.hours);
-
-        String[] parser = hours_textView.getText().toString().split("-");
-
-        String location_name = location_name_textView.getText().toString().trim();
-
-        String day = day_textView.getText().toString().trim();
-        String hour_start = parser[0].trim();
-        String hour_end = parser[1].trim();
-
-        Log.i("SWITCH ON CONTEXT", getContext().toString());
-        Log.i("SWITCH ON Day", "O"+day+"O");
-        Log.i("SWITCH ON Hour start", "O"+hour_start+"O");
-        Log.i("SWITCH ON Hour end", "O"+hour_end+"O");
-        Log.i("SWITCH ON latitude", latitude);
-        Log.i("SWITCH ON longitude", longitude);
-
-        if(isChecked)
-        {
-            Bl_app.clearSmsPrefsIfSwitchOff(latitude, longitude, getContext());
-            try {
-                dal_time.changeSwitchOn(day, hour_start, hour_end, latitude, longitude, getContext());
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        else
-        {
-            Log.i("SWITCH OFF CONTEXT", getContext().toString());
-            try {
-                dal_time.changeSwitchOff(day, hour_start, hour_end, latitude, longitude, getContext());
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 }

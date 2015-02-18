@@ -3,7 +3,9 @@ package com.thebigparent.sg.thebigparent.DB;
 import android.provider.BaseColumns;
 
 /**
- * Created by Guy on 05/02/15.
+ * Constants_location
+ *
+ * Constants of location table
  */
 public class Constants_location implements BaseColumns {                        // Constants for "bestResults" table
 
