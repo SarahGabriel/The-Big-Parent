@@ -28,7 +28,9 @@ public class MyDbHelper extends SQLiteOpenHelper {            //Helper to create
                 Constants_location.COLUMN_NAME_LONGITUDE + " TEXT_TYPE, " +
                 Constants_location.COLUMN_NAME_LATITUDE + " TEXT_TYPE, " +
                 Constants_location.COLUMN_NAME_RADIUS + " TEXT_TYPE, " +
-                Constants_location.COLUMN_NAME_CONTACT + " TEXT_TYPE);" );
+                Constants_location.COLUMN_NAME_CONTACT + " TEXT_TYPE, " +
+                Constants_location.COLUMN_NAME_PHONE+ " TEXT_TYPE, " +
+                Constants_location.COLUMN_NAME_NUMBER_OF_CONTACTS + " INTEGER);" );
 
         db.execSQL("CREATE TABLE "+ Constants_time.TABLE_NAME+ "("+
                 Constants_time._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +

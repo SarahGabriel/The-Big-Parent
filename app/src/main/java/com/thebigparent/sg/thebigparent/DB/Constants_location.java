@@ -13,6 +13,8 @@ public class Constants_location implements BaseColumns {                        
     public static final String COLUMN_NAME_LOCATION_NAME = "LocationName";
     public static final String COLUMN_NAME_RADIUS = "Radius";
     public static final String COLUMN_NAME_CONTACT = "Contact";
+    public static final String COLUMN_NAME_PHONE = "Phone";
+    public static final String COLUMN_NAME_NUMBER_OF_CONTACTS = "NumberOfContacts";
 
 
 }

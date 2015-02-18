@@ -1,10 +1,15 @@
 package com.thebigparent.sg.thebigparent.Dal;
 
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
+import android.provider.ContactsContract;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.thebigparent.sg.thebigparent.Classes.MapLocation;
@@ -38,6 +43,8 @@ public class Dal_location
         values.put(Constants_location.COLUMN_NAME_LATITUDE, location.getLatitude());
         values.put(Constants_location.COLUMN_NAME_RADIUS, location.getRadius());
         values.put(Constants_location.COLUMN_NAME_CONTACT, location.getContact());
+        values.put(Constants_location.COLUMN_NAME_PHONE, location.getPhone());
+        values.put(Constants_location.COLUMN_NAME_NUMBER_OF_CONTACTS, location.getNumOfContacts());
 
         db.insertOrThrow(Constants_location.TABLE_NAME, null, values);
         db.close();
@@ -82,7 +89,7 @@ public class Dal_location
         List<MapLocation> allLocations = new ArrayList<MapLocation>();
         MyDbHelper dbHelper = new MyDbHelper(context);
         SQLiteDatabase db1 = dbHelper.getReadableDatabase();
-        String[] cols={Constants_location.COLUMN_NAME_LATITUDE, Constants_location.COLUMN_NAME_LONGITUDE, Constants_location.COLUMN_NAME_LOCATION_NAME, Constants_location.COLUMN_NAME_CONTACT, Constants_location.COLUMN_NAME_RADIUS};
+        String[] cols={Constants_location.COLUMN_NAME_LATITUDE, Constants_location.COLUMN_NAME_LONGITUDE, Constants_location.COLUMN_NAME_LOCATION_NAME, Constants_location.COLUMN_NAME_CONTACT, Constants_location.COLUMN_NAME_RADIUS , Constants_location.COLUMN_NAME_PHONE, Constants_location.COLUMN_NAME_NUMBER_OF_CONTACTS};
         Cursor c = db1.query(
                 Constants_location.TABLE_NAME,    // The table to query
                 cols,                    // The columns to return
@@ -99,11 +106,13 @@ public class Dal_location
             String locationName = c.getString((2)).trim();
             String contact = c.getString((3)).trim();
             String radius = c.getString((4)).trim();
+            String phone = c.getString((5)).trim();
+            int numOfContacts = Integer.parseInt(c.getString((6)).trim());
 
             double latitude = Double.parseDouble(lat);
             double longitude = Double.parseDouble(lng);
 
-            MapLocation location = new MapLocation(locationName, lng, lat, radius, contact);
+            MapLocation location = new MapLocation(locationName, lng, lat, radius, contact, phone, numOfContacts);
             allLocations.add(location);
         }
 
@@ -123,7 +132,7 @@ public class Dal_location
 
         // SELECT COLUMN_NAME_ENTRY_ID, COLUMN_NAME_PASSWORD FROM TABLE_NAME
         // WHERE COLUMN_NAME_ENTRY_ID = username AND COLUMN_NAME_PASSWORD = password
-        String[] cols={Constants_location.COLUMN_NAME_LATITUDE, Constants_location.COLUMN_NAME_LONGITUDE, Constants_location.COLUMN_NAME_LOCATION_NAME, Constants_location.COLUMN_NAME_CONTACT, Constants_location.COLUMN_NAME_RADIUS};
+        String[] cols={Constants_location.COLUMN_NAME_LATITUDE, Constants_location.COLUMN_NAME_LONGITUDE, Constants_location.COLUMN_NAME_LOCATION_NAME, Constants_location.COLUMN_NAME_CONTACT, Constants_location.COLUMN_NAME_RADIUS, Constants_location.COLUMN_NAME_PHONE, Constants_location.COLUMN_NAME_NUMBER_OF_CONTACTS};
         Cursor c = db1.query(
                 Constants_location.TABLE_NAME,
                 cols,
@@ -142,8 +151,10 @@ public class Dal_location
         String locationName = c.getString((2)).trim();
         String contact = c.getString((3)).trim();
         String radius = c.getString((4)).trim();
+        String phone = c.getString((5)).trim();
+        int numOfContacts = Integer.parseInt(c.getString((6)).trim());
 
-        location = new MapLocation(locationName, lng, lat, radius, contact);
+        location = new MapLocation(locationName, lng, lat, radius, contact , phone, numOfContacts);
         db1.close();
         return location;
     }
@@ -190,6 +201,60 @@ public class Dal_location
         db.close();
 
         return allMarkers;
+    }
+
+
+
+    public List<String> getContactDetailsById(String id , Context context)
+    {
+
+//        Intent pickContactIntent = new Intent(Intent.ACTION_PICK, Uri.parse("content://contacts"));
+//        pickContactIntent.setType(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE); // Show user only contacts w/ phone numbers
+       // startActivityForResult(pickContactIntent, PICK_CONTACT_REQUEST);
+
+        List<String> contact = new ArrayList<String>();
+
+        List<String> contacts = new ArrayList<String>();
+        List<String> phones = new ArrayList<String>();
+
+        ContentResolver cr = context.getContentResolver();
+            Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
+            if (cur.getCount() > 0)
+            {
+                while (cur.moveToNext())
+                {
+                    String id1 = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
+
+                    String name = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                    if (Integer.parseInt(cur.getString(cur.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0 )
+                    {
+        //                    String phone = cur.getString(cur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+        //                    phones.add(phone);
+        //                    Log.w("phones", phones.toString());
+                        Cursor pCur = cr.query(
+                                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                                null,
+                                ContactsContract.CommonDataKinds.Phone.CONTACT_ID +" = ?",
+                                new String[]{id1}, null);
+                        while (pCur.moveToNext())
+                        {
+                            String id2 = pCur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
+
+                            contacts.add(name);
+                            String phoneNo = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                            phones.add(phoneNo);
+
+                            Log.w("aaaaaaa", name + " " + phoneNo + " " + id2);
+                            //String mail = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Email));
+                               Toast.makeText(context, "id " + id1 + ", Name: " + name + ", Phone No: " + phoneNo, Toast.LENGTH_SHORT).show();
+                        }
+                        pCur.close();
+                    }
+                }
+        }
+
+        return contact;
+
     }
 
     public void updateRadius(String latitude, String longitude, String newRadius, Context context)

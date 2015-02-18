@@ -22,18 +22,18 @@ import java.util.List;
 /**
  * Created by Sarah on 12-Feb-15.
  */
-public class AllTimeAdapter extends ArrayAdapter<String> implements CompoundButton.OnCheckedChangeListener
+public class AllTimeAdapter extends ArrayAdapter<String> implements CompoundButton.OnCheckedChangeListener      // Adapter to show all times in layout
 {
     private LayoutInflater inflater;
-    //private String[] times;
     private List<String> times;
     private String[] parser, parserHours;
     private String day, latitude, longitude, hour_start, hour_end, no_repeat;
 
-    Dal_time dal_time;
-    Dal_location dal_location;
+    Dal_time dal_time;              // For time db calls
+    Dal_location dal_location;      // For location db calls
 
-    public AllTimeAdapter(Context context, int resource,  int textViewResourceId, List<String> items)
+
+    public AllTimeAdapter(Context context, int resource,  int textViewResourceId, List<String> items) // Builder
     {
         super(context, resource, textViewResourceId, items);
         this.times = items;
@@ -43,6 +43,8 @@ public class AllTimeAdapter extends ArrayAdapter<String> implements CompoundButt
 
         inflater = (LayoutInflater) context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
     }
+
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent)
     {

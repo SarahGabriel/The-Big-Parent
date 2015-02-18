@@ -23,17 +23,14 @@ import com.thebigparent.sg.thebigparent.Services.GpsService;
 /**
  * Implementation of App Widget functionality.
  */
-public class WorkingStatusAppWidget extends AppWidgetProvider {
+public class WorkingStatusAppWidget extends AppWidgetProvider {     //Widget that displays the tracking status ON OFF
 
-    private Button turnOnButton;
     final static String WIDGET_ACTION = "WIDGET_ACTION";
-    final static String turnOnButtonText = "Turn on locations";
-    final static String turnOffButtonText = "Turn off locations";
     private static RemoteViews views;
 
 
     @Override
-    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {   // On update
         // There may be multiple widgets active, so update all of them
         final int N = appWidgetIds.length;
         for (int i = 0; i < N; i++) {
@@ -41,32 +38,19 @@ public class WorkingStatusAppWidget extends AppWidgetProvider {
         }
     }
 
-
-    @Override
-    public void onEnabled(Context context) {
-        // Enter relevant functionality for when the first widget is created
-
-
-    }
-
-    @Override
-    public void onDisabled(Context context) {
-        // Enter relevant functionality for when the last widget is disabled
-    }
-
-    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
-                                int appWidgetId) {
+    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId)    // On update
+    {
 
         CharSequence widgetText = context.getString(R.string.appwidget_text);
         // Construct the RemoteViews object
         views = new RemoteViews(context.getPackageName(), R.layout.working_status_app_widget);
         views.setTextViewText(R.id.appwidget_text, widgetText);
 
-
+        // Get the status state from shared pref
         SharedPreferences settings = context.getSharedPreferences("MyPrefsFile", context.MODE_PRIVATE);
         boolean on = settings.getBoolean("On", false);
 
-        if(on && canGetLocation(context))
+        if(on && canGetLocation(context))           // If tracking is ON update widget
         {
             views.setInt(R.id.widgetLayout, "setBackgroundResource", R.drawable.on_background);
             views.setTextViewText(R.id.appwidget_text, "The Big Parent: ON");
@@ -77,28 +61,12 @@ public class WorkingStatusAppWidget extends AppWidgetProvider {
             views.setTextViewText(R.id.appwidget_text, "The Big Parent: OFF");
         }
 
+
+        // Set on click pending intent to go to main activity
         Intent intent = new Intent(context, MainActivity.class);
         intent.setAction(WIDGET_ACTION);
-
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
         views.setOnClickPendingIntent(R.id.appwidget_text, pendingIntent);
-
-//        Intent intentServiceGps = new Intent(context,GpsService.class);
-//        intentServiceGps.setAction("STOPy");
-//
-//        PendingIntent pendingIntent2 = PendingIntent.getService(context, 0, intentServiceGps, 0);
-//        views.setOnClickPendingIntent(R.id.turnOnButton, pendingIntent2);
-
-
-//        if(canGetLocation(context))
-//        {
-//            views.setInt(R.id.turnOnButton, "setBackgroundColor", Color.GREEN);
-//            views.setTextViewText(R.id.turnOnButton, "Yeaaaa");
-//        }
-//        else
-//        {
-//            views.setInt(R.id.turnOnButton, "setBackgroundColor", Color.RED);
-//        }
 
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
@@ -106,30 +74,8 @@ public class WorkingStatusAppWidget extends AppWidgetProvider {
 
     }
 
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        super.onReceive(context, intent);
 
-        if(intent.getAction().equals(WIDGET_ACTION))
-        {
-//            Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS );
-//            myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//            context.startActivity(myIntent);
-//
-//
-//            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-//            ComponentName thisWidget = new ComponentName(context, WorkingStatusAppWidget.class);
-//
-//
-//            appWidgetManager.updateAppWidget(thisWidget, views);
-//
-//
-        }
-
-
-    }
-
-    public static boolean canGetLocation(Context context)
+    public static boolean canGetLocation(Context context)  // Check if device locations are ON
     {
         boolean result = true;
         LocationManager lm = null;
