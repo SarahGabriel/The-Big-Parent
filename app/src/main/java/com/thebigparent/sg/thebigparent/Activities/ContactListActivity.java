@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.thebigparent.sg.thebigparent.R;
 
@@ -67,7 +68,7 @@ public class ContactListActivity extends Activity implements AdapterView.OnItemC
                         contacts.add(name);
                         String phoneNo = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                         //String mail = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Email));
-                     //   Toast.makeText(ContactListActivity.this, "Name: " + name + ", Phone No: " + phoneNo, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ContactListActivity.this, "ID" + id + ", Name: " + name + ", Phone No: " + phoneNo, Toast.LENGTH_SHORT).show();
                     }
                     pCur.close();
                 }

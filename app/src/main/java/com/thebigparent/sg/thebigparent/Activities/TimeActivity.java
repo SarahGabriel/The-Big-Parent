@@ -3,37 +3,35 @@ package com.thebigparent.sg.thebigparent.Activities;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.thebigparent.sg.thebigparent.BL.Bl_app;
 import com.thebigparent.sg.thebigparent.DB.MyTimeAdapter;
-import com.thebigparent.sg.thebigparent.Dal.Dal_location;
 import com.thebigparent.sg.thebigparent.Dal.Dal_time;
 import com.thebigparent.sg.thebigparent.R;
 
 import java.text.ParseException;
-import java.util.Calendar;
 import java.util.List;
 
-public class TimeActivity extends ActionBarActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
-    final static public int REQUEST_CODE_ADD_TIME = 108;
+/**
+ * TimeActivity
+ *
+ * Activity that shows on list all tracking time of a specific marker
+ */
+public class TimeActivity extends ActionBarActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener
+{
+    //final static public int REQUEST_CODE_ADD_TIME = 108;
     private ListView listView;
     private MyTimeAdapter timeAdapter;
     private Dal_time dal_time;
-    private Dal_location dal_location;
-    private Bl_app bl_app;
-
     private String latitude, longitude;
 
     @Override
@@ -41,41 +39,35 @@ public class TimeActivity extends ActionBarActivity implements AdapterView.OnIte
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_time);
-        //ActionBar actionBar = getActionBar();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);     //disable go back arrow
 
         dal_time = new Dal_time();
-        dal_location = new Dal_location();
-
-        //Date date = new Date()
-        try
-        {
-            Calendar now = Calendar.getInstance();
-
-            dal_time.getSwitchOnLocationByDateAndTime(now.get(Calendar.DAY_OF_WEEK), String.format("%02d", now.get(Calendar.HOUR_OF_DAY))+":"+String.format("%02d", now.get(Calendar.MINUTE)), this);
-        }
-        catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        try
-        {
-            bl_app.deleteExpiredNoRepeatTimes(this);
-        }
-        catch (ParseException e)
-        {
-            e.printStackTrace();
-        }
         listView = (ListView)findViewById(R.id.list_time);
+//        try
+//        {
+//            Calendar now = Calendar.getInstance();      // get calendar
+////           Get all location where
+//            dal_time.getSwitchOnLocationByDateAndTime(now.get(Calendar.DAY_OF_WEEK), String.format("%02d", now.get(Calendar.HOUR_OF_DAY))+":"+String.format("%02d", now.get(Calendar.MINUTE)), this);
+//        }
+//        catch (ParseException e) {
+//            e.printStackTrace();
+//        }
 
-        Intent i = getIntent();
+        try
+        {
+            Bl_app.deleteExpiredNoRepeatTimes(this);        // delete expired no_repeat tracking times if needed
+        }
+        catch (ParseException e){e.printStackTrace();}
 
+        Intent i = getIntent();         // get information from intent
         latitude = i.getStringExtra("latitude");
         longitude = i.getStringExtra("longitude");
 
-        List<String> allHours = dal_time.getAllHoursAndDayByLatLng(latitude, longitude, this);
-        timeAdapter = new MyTimeAdapter(this, android.R.layout.activity_list_item, R.id.list_time, allHours);
+        List<String> allTrackingTimes = dal_time.getAllHoursAndDayByLatLng(latitude, longitude, this);      // get all hours of tracking times
 
+//        go to adapter in order to set the listView
+        timeAdapter = new MyTimeAdapter(this, android.R.layout.activity_list_item, R.id.list_time, allTrackingTimes);
         listView.setAdapter(timeAdapter);
         listView.setOnItemClickListener(this);
         listView.setOnItemLongClickListener(this);
@@ -87,16 +79,15 @@ public class TimeActivity extends ActionBarActivity implements AdapterView.OnIte
     {
         super.onResume();
 
-        List<String> allHours = dal_time.getAllHoursAndDayByLatLng(latitude, longitude, this);
+        List<String> allTrackingTimes = dal_time.getAllHoursAndDayByLatLng(latitude, longitude, this); // get all hours of tracking times
         try
         {
-            bl_app.deleteExpiredNoRepeatTimes(this);
+            Bl_app.deleteExpiredNoRepeatTimes(this);        // delete expired no_repeat tracking times if needed
         }
-        catch (ParseException e)
-        {
-            e.printStackTrace();
-        }
-        timeAdapter = new MyTimeAdapter(this, android.R.layout.activity_list_item, R.id.list_time, allHours);
+        catch (ParseException e){e.printStackTrace();}
+
+        // set adapter to the listView
+        timeAdapter = new MyTimeAdapter(this, android.R.layout.activity_list_item, R.id.list_time, allTrackingTimes);
         listView.setAdapter(timeAdapter);
         listView.setOnItemClickListener(this);
         listView.setOnItemLongClickListener(this);
@@ -139,7 +130,7 @@ public class TimeActivity extends ActionBarActivity implements AdapterView.OnIte
     }
 
 
-    public void onClick_menu_add_time(MenuItem item)
+    public void onClick_menu_add_time(MenuItem item)        // on click addTime icon
     {
         Intent i = new Intent(this, AddTimeActivity.class);
         i.putExtra("latitude", latitude);
@@ -148,17 +139,14 @@ public class TimeActivity extends ActionBarActivity implements AdapterView.OnIte
     }
 
     @Override
-    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)     // delete time on long click
     {
 
         final TextView hours = (TextView)view.findViewById(R.id.hours);
         final TextView day = (TextView)view.findViewById(R.id.all_days);
-        final LinearLayout layout = (LinearLayout)view.findViewById(R.id.layout_list_view);
-        final Drawable backgroundColor = layout.getBackground();
-        layout.setBackgroundColor(Color.DKGRAY);
         new AlertDialog.Builder(this)
-                .setTitle("Delete Time")
-                .setMessage("Are you sure you want to delete this Tracking time?")
+                .setTitle("Delete Time")    // todo change string
+                .setMessage("Are you sure you want to delete this Tracking time?") // todo change string
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener()
                 {
                     public void onClick(DialogInterface dialog, int which)
@@ -174,7 +162,6 @@ public class TimeActivity extends ActionBarActivity implements AdapterView.OnIte
                     public void onClick(DialogInterface dialog, int which)
                     {
                         // do nothing
-                        layout.setBackground(backgroundColor);
                     }
                 })
                 .setIcon(android.R.drawable.ic_dialog_alert)
@@ -183,11 +170,11 @@ public class TimeActivity extends ActionBarActivity implements AdapterView.OnIte
         return false;
     }
 
-    public void onClick_menu_delete_all_times(MenuItem item)
+    public void onClick_menu_delete_all_times(MenuItem item)        // delete all tracking times
     {
         new AlertDialog.Builder(this)
-                .setTitle("Delete All Times")
-                .setMessage("Are you sure you want to delete all Times? You cannot undo it!")
+                .setTitle("Delete All Times") // todo change string
+                .setMessage("Are you sure you want to delete all Times? You cannot undo it!") // todo change string
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener()
                 {
                     public void onClick(DialogInterface dialog, int which)
@@ -202,7 +189,6 @@ public class TimeActivity extends ActionBarActivity implements AdapterView.OnIte
                 .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         // do nothing
-//                        layout.setBackground(backgroundColor);
                     }
                 })
                 .setIcon(android.R.drawable.ic_dialog_alert)
@@ -210,7 +196,7 @@ public class TimeActivity extends ActionBarActivity implements AdapterView.OnIte
 
     }
 
-    public void onClick_menu_home(MenuItem item)
+    public void onClick_menu_home(MenuItem item)        // go to home page
     {
         Intent i = new Intent(this, MainActivity.class);
         startActivity(i);
@@ -218,7 +204,7 @@ public class TimeActivity extends ActionBarActivity implements AdapterView.OnIte
 
     public void onClick_menu_map(MenuItem item)
     {
-        Intent i = new Intent(this, MapsActivity.class);
+        Intent i = new Intent(this, MapsActivity.class);        // go to map
         startActivity(i);
     }
 }

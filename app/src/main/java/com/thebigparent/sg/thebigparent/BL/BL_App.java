@@ -85,7 +85,8 @@ public class Bl_app
 
         Dal_time dal_time = new Dal_time();
         List<Time> times = dal_time.getTimesByNoRepeat(context);
-        if(times.size() == 0)
+
+        if(times == null)
         {
             return;
         }
@@ -105,8 +106,7 @@ public class Bl_app
         Date date_today = dateFormat.parse(date);    // back from string to date with format
 
 
-        for(Time time : times)
-        {
+        for (Time time : times) {
             String hour_start = time.getHourStart();
             String hour_end = time.getHourEnd();
             String date_time = time.getDate();
@@ -114,13 +114,10 @@ public class Bl_app
             Date dateTime = dateFormat.parse(date_time);
             Date hourEnd = sdf.parse(hour_end);
 
-            if(date_today.after(dateTime))
-            {
+            if (date_today.after(dateTime)) {
                 dal_time.deleteTime(time, context);
 
-            }
-            else if(hour_today.after(hourEnd))
-            {
+            } else if (hour_today.after(hourEnd)) {
                 dal_time.deleteTime(time, context);
             }
             // Date hour_time = sdf.parse(hour_start + ":" + hour_end);

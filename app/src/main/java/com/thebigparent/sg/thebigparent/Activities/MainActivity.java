@@ -11,7 +11,6 @@ import android.content.SharedPreferences;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,7 +29,9 @@ import com.thebigparent.sg.thebigparent.Widget.WorkingStatusAppWidget;
 import java.util.Calendar;
 import java.util.List;
 
-
+/**
+ * Main activity of app
+ */
 public class MainActivity extends Activity
 {
 
@@ -50,32 +51,31 @@ public class MainActivity extends Activity
         dal_time = new Dal_time();
         dal_location = new Dal_location();
 
+//        find views
         allTrackingButton = (Button)findViewById(R.id.all_tracking_time);
         allMarkerButton = (Button)findViewById(R.id.all_marker);
         trackingTime_textView = (TextView)findViewById(R.id.tracker_time);
 
 
-        List<String> trackingList = dal_time.getAllTime(this);
+        List<String> trackingList = dal_time.getAllTime(this);      // get all tracking times
 
-        List<String> markersList = dal_location.getAllMarkers(this);
+        List<String> markersList = dal_location.getAllMarkers(this);        // get all markers on map
 
         if(trackingList.size() == 0)
         {
-            //allTrackingButton.setClickable(false);
-            allTrackingButton.setEnabled(false);
+            allTrackingButton.setEnabled(false);        // if no tracking time, button disabled
         }
         else
         {
-
+//          Get current hour to check if this is a tracking time hour. If it is, show the time on the activity
             Calendar now = Calendar.getInstance();
 
             int dayOfWeek = now.get(Calendar.DAY_OF_WEEK);
             int hour = now.get(Calendar.HOUR_OF_DAY);
             int minute = now.get(Calendar.MINUTE);
             String hourOfDay = String.format("%02d", hour) + ":" + String.format("%02d", minute);
-            Log.w("Tracking HOUR", hourOfDay);
 
-            Time trackingTime = dal_time.getCurrentTimeSwitchOn(dayOfWeek, hourOfDay, this);
+            Time trackingTime = dal_time.getCurrentTimeSwitchOn(dayOfWeek, hourOfDay, this);        // get current tracking time
             if(trackingTime != null)
             {
                 trackingTime_textView.setText(trackingTime.getHourStart() + " - " + trackingTime.getHourEnd());
@@ -85,12 +85,12 @@ public class MainActivity extends Activity
 
         if(markersList.size() == 0)
         {
-            allMarkerButton.setEnabled(false);
+            allMarkerButton.setEnabled(false);      // if no marker on map, button disabled
         }
     }
 
     @Override
-    protected void onResume()
+    protected void onResume()           // do same as onCreate()
     {
         super.onResume();
 
@@ -156,89 +156,72 @@ public class MainActivity extends Activity
         return super.onOptionsItemSelected(item);
     }
 
-    public void onClick_map_button(View view)
+    public void onClick_map_button(View view)       //    Go to map if button clicked
     {
         Intent i = new Intent(this, MapsActivity.class);
         startActivity(i);
-
-
     }
 
+    public void onClick_startGps(View view)         // activate tracking
+    {
 
-    public void onClick_startGps(View view) {
-
-
-        Bl_app.makeSound(this, R.raw.app_interactive_alert_tone_on);
-        Bl_app.clearSmsPrefs(this);
-        if(!canGetLocation(this))
+        Bl_app.makeSound(this, R.raw.app_interactive_alert_tone_on);        // make sound on click
+        Bl_app.clearSmsPrefs(this);     // clear preferences in order to allow SMS sending
+        if(!canGetLocation(this))           // if location inactive on device
         {
             Bl_app.makeSound(this, R.raw.multimedia_pop_up_alert_tone_1);
-
-            showSettingsAlert();
-
+            showSettingsAlert();        // alert message
         }
 
-
-        i = new Intent(this, GpsService.class);
+        i = new Intent(this, GpsService.class);         // activate service on GPS
         startService(i);
 
-
+//          editing preferences - update that location in on
         SharedPreferences settings = getSharedPreferences("MyPrefsFile", MODE_PRIVATE);
         SharedPreferences.Editor editor = settings.edit();
         editor.putBoolean("On", true);
         editor.commit();
 
-
-
+//        Edit widget - changing background to green color and set text when location on
         Context context = this;
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.working_status_app_widget);
-
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
         ComponentName thisWidget = new ComponentName(context, WorkingStatusAppWidget.class);
-
-//        remoteViews.setInt(R.id.widgetLayout, "setBackgroundColor", Color.GREEN);
         remoteViews.setInt(R.id.widgetLayout, "setBackgroundResource", R.drawable.on_background);
-        remoteViews.setTextViewText(R.id.appwidget_text, "The Big Parent: ON");
+        remoteViews.setTextViewText(R.id.appwidget_text, "The Big Parent: ON"); // todo change string
         appWidgetManager.updateAppWidget(thisWidget, remoteViews);
 
     }
 
 
-    public void onClick_stopGps(View view)
+    public void onClick_stopGps(View view)          // deactivate tracking
     {
+        Bl_app.makeSound(this, R.raw.app_interactive_alert_tone_off);       // make sound on button clicked
 
-        Bl_app.makeSound(this, R.raw.app_interactive_alert_tone_off);
-
-
-
-        i = new Intent(this, GpsService.class);
+        i = new Intent(this, GpsService.class);     // stopping service in background
         stopService(i);
 
-
-        Context context = this;
-        RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.working_status_app_widget);
-
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-        ComponentName thisWidget = new ComponentName(context, WorkingStatusAppWidget.class);
-
-       // remoteViews.setInt(R.id.widgetLayout, "setBackgroundColor", Color.RED);
-        remoteViews.setInt(R.id.widgetLayout, "setBackgroundResource", R.drawable.off_background);
-        remoteViews.setTextViewText(R.id.appwidget_text, "The Big Parent: OFF");
-        appWidgetManager.updateAppWidget(thisWidget, remoteViews);
-
-
+//          Editing preferences - update that location in off
         SharedPreferences settings = getSharedPreferences("MyPrefsFile", MODE_PRIVATE);
         SharedPreferences.Editor editor = settings.edit();
         editor.putBoolean("On", false);
         editor.commit();
 
+//         Edit Widget - changing background to red color and set text when location off
+        Context context = this;
+        RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.working_status_app_widget);
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        ComponentName thisWidget = new ComponentName(context, WorkingStatusAppWidget.class);
+        remoteViews.setInt(R.id.widgetLayout, "setBackgroundResource", R.drawable.off_background);
+        remoteViews.setTextViewText(R.id.appwidget_text, "The Big Parent: OFF"); // todo change string
+        appWidgetManager.updateAppWidget(thisWidget, remoteViews);
     }
 
 
 
-    public static boolean canGetLocation(Context context)
+    public static boolean canGetLocation(Context context)       // check if location on/off on the device
     {
-        boolean result = true;
+        boolean result;
         LocationManager lm = null;
         boolean gps_enabled = false;
         boolean network_enabled = false;
@@ -246,35 +229,37 @@ public class MainActivity extends Activity
         {
             lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         }
-        // exceptions will be thrown if provider is not permitted.
-        try {
-            gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        } catch (Exception ex) {
 
+        // exceptions will be thrown if provider is not permitted.
+        try
+        {
+            gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
         }
+        catch (Exception ignored) {}
+
         try
         {
             network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
         }
-        catch (Exception ex) {
-        }
+        catch (Exception ignored){}
+
         if (gps_enabled == false || network_enabled == false)
         {
-            result = false;
+            result = false;     // location off
         }
         else
         {
-            result = true;
+            result = true;      // location on
         }
-
         return result;
     }
 
-    public void showSettingsAlert() {
+    public void showSettingsAlert()         // show alert dialog
+    {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
 
         // Setting Dialog Title
-        alertDialog.setTitle("Locations are OFF!");
+        alertDialog.setTitle("Locations are OFF!");     // todo change string
 
         // Setting Dialog Message
         alertDialog.setMessage("Please Turn on locations");
@@ -294,15 +279,15 @@ public class MainActivity extends Activity
     }
 
 
-    public void onClick_allTrackingTime(View view)
+    public void onClick_allTrackingTime(View view)      // on button click - "ALL TRACKING TIME"
     {
-        Intent i = new Intent(this, AllTrackingTimeActivity.class);
+        Intent i = new Intent(this, AllTrackingTimeActivity.class);     // go to  AllTrackingTimeActivity
         startActivity(i);
     }
 
-    public void onClick_allMarker(View view)
+    public void onClick_allMarker(View view)        // on button click - "VIEW ALL MARKERS"
     {
-        Intent i = new Intent(this, AllMarkerActivity.class);
+        Intent i = new Intent(this, AllMarkerActivity.class);       // go to AllMarkerActivity
         startActivity(i);
     }
 }

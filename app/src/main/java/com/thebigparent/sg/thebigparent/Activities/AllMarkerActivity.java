@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,15 +15,18 @@ import android.widget.Toast;
 
 import com.thebigparent.sg.thebigparent.DB.MarkerAdapter;
 import com.thebigparent.sg.thebigparent.Dal.Dal_location;
-import com.thebigparent.sg.thebigparent.Dal.Dal_time;
 import com.thebigparent.sg.thebigparent.R;
 
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * Class AllMarkerActivity
+ *
+ * Activity that show all the markers in the map
+ */
 public class AllMarkerActivity extends ActionBarActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener
 {
-    private Dal_time dal_time;
     private Dal_location dal_location;
     private MarkerAdapter markerAdapter;
     private ListView listView;
@@ -36,7 +38,6 @@ public class AllMarkerActivity extends ActionBarActivity implements AdapterView.
         setContentView(R.layout.activity_all_marker);
 
 //      DAL - to have access to the DB
-        dal_time = new Dal_time();
         dal_location = new Dal_location();
 
 //        List view of all the markers
@@ -107,8 +108,7 @@ public class AllMarkerActivity extends ActionBarActivity implements AdapterView.
         Intent i = new Intent(parent.getContext(), MarkerOptionsActivity.class);
         TextView lat = (TextView)view.findViewById(R.id.lat_marker);
         TextView lng = (TextView)view.findViewById(R.id.lng_marker);
-        Log.i("latitude", lat.getText().toString());
-        Log.i("longitude", lng.getText().toString());
+//        add information to the intent
         i.putExtra("latitude", lat.getText().toString());
         i.putExtra("longitude", lng.getText().toString());
         startActivity(i);
@@ -123,8 +123,7 @@ public class AllMarkerActivity extends ActionBarActivity implements AdapterView.
         final TextView longitude = (TextView)view.findViewById(R.id.lng_marker);
         final TextView location = (TextView)view.findViewById(R.id.location_marker);
 
-//        final Drawable backgroundColor = layout.getBackground();
-//        layout.setBackgroundColor(Color.DKGRAY);
+        //todo change string
         new AlertDialog.Builder(this)
                 .setTitle("Delete Marker")
                 .setMessage("Are you sure you want to delete this Marker? It will also erase all your tracking time!")
@@ -147,7 +146,6 @@ public class AllMarkerActivity extends ActionBarActivity implements AdapterView.
                     public void onClick(DialogInterface dialog, int which)
                     {
                         // do nothing
-//                        layout.setBackground(backgroundColor);
                     }
                 })
                 .setIcon(android.R.drawable.ic_dialog_alert)
@@ -156,12 +154,14 @@ public class AllMarkerActivity extends ActionBarActivity implements AdapterView.
         return true;
     }
 
+//    go back to home page
     public void onClick_menu_home(MenuItem item)
     {
         Intent i = new Intent(this, MainActivity.class);
         startActivity(i);
     }
 
+//    go back to map
     public void onClick_menu_map(MenuItem item)
     {
         Intent i = new Intent(this, MapsActivity.class);

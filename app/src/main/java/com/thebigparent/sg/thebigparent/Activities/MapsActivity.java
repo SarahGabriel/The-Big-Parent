@@ -27,18 +27,22 @@ import com.thebigparent.sg.thebigparent.R;
 import java.util.ArrayList;
 import java.util.List;
 
-// activity that handles locations to be tracked
+/**
+ * MapsActivity
+ *
+ * Activity that handles locations to be tracked
+ */
 public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapLongClickListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener, GoogleMap.InfoWindowAdapter , GoogleMap.OnMapClickListener
 {
 
     private Marker clickedMarker;
     private static Circle markerCircle;     // The radius circle of the clicked marker
 
-    Button plus,minus;          // For the radius size
-    TextView radiusText;
+    private Button plus,minus;          // For the radius size
+    private TextView radiusText;
 
-    List<LatLng> latLngList;        // List of all the markers locations
-    List<Circle> circlesRadius;     // List of all the markers radius circles
+    private List<LatLng> latLngList;        // List of all the markers locations
+    private List<Circle> circlesRadius;     // List of all the markers radius circles
 
     public static GoogleMap mMap;   // Might be null if Google Play services APK is not available.
     private Marker myMarker;        // The new added marker
